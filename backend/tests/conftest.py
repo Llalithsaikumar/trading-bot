@@ -6,7 +6,8 @@ Provides an async test client, test DB session, and factories.
 from __future__ import annotations
 
 import asyncio
-from typing import AsyncGenerator
+from typing import TYPE_CHECKING
+from typing import Any
 
 import pytest
 import pytest_asyncio
@@ -15,6 +16,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.domain.models.base import Base
 from app.main import create_app
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
 
 # In-memory SQLite for unit tests (override with real PG in integration tests)
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -28,7 +32,7 @@ def event_loop():
 
 
 @pytest_asyncio.fixture(scope="function")
-async def db_session() -> AsyncGenerator[AsyncSession, None]:
+async def db_session() -> AsyncGenerator[AsyncSession]:
     engine = create_async_engine(TEST_DATABASE_URL, echo=False)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -43,7 +47,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest_asyncio.fixture(scope="function")
-async def client(db_session) -> AsyncGenerator[AsyncClient, None]:
+async def client(db_session) -> AsyncGenerator[AsyncClient]:
     from app.core.dependencies import get_db, get_redis
 
     class MockRedis:

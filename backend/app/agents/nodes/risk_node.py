@@ -12,7 +12,6 @@ from typing import Any
 
 from app.agents.graph.state import RiskViolation, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.risk_agent import IRiskAgent
 from app.agents.risk_agent.rules import RISK_RULES
 
 

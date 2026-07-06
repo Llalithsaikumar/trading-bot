@@ -5,14 +5,10 @@ Implements a read-through cache: Redis → Exchange.
 
 from __future__ import annotations
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.domain.schemas.market_data import OHLCVResponse, OrderBookResponse, TickerResponse
-
-
 import json
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
@@ -21,6 +17,9 @@ from app.domain.schemas.market_data import OHLCVResponse, OrderBookResponse, Tic
 from app.infrastructure.cache.redis_client import cache_get, cache_set
 from app.infrastructure.exchange import get_exchange
 from app.infrastructure.repositories.market_data_repository import OHLCVRepository, TickerRepository
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class MarketDataService:

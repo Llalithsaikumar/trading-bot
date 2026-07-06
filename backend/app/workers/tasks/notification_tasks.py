@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-from celery import shared_task
-
-
 import asyncio
+
 from celery import shared_task
 from loguru import logger
 
@@ -54,9 +52,9 @@ async def _check_price_alerts_async() -> dict:
                 continue
 
             triggered = False
-            if alert.alert_type == "price_above" and price >= alert.condition_value:
-                triggered = True
-            elif alert.alert_type == "price_below" and price <= alert.condition_value:
+            if (alert.alert_type == "price_above" and price >= alert.condition_value) or (
+                alert.alert_type == "price_below" and price <= alert.condition_value
+            ):
                 triggered = True
 
             if triggered:
@@ -87,8 +85,8 @@ def check_price_alerts(self) -> dict:
 def send_email_notification(user_id: str, subject: str, body: str) -> None:
     """Send an email notification to a user."""
     import smtplib
-    from email.mime.text import MIMEText
     import uuid
+    from email.mime.text import MIMEText
 
     from sqlalchemy import select
 

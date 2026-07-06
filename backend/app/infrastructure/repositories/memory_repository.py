@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
+
 from sqlalchemy import select
 
 from app.domain.models.memory import LongTermMemory
 from app.infrastructure.repositories.base import BaseRepository
+
+if TYPE_CHECKING:
+    import uuid
 
 
 class MemoryRepository(BaseRepository[LongTermMemory]):

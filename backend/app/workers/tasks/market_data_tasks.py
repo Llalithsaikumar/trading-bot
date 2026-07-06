@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
+
 from celery import shared_task
 from loguru import logger
-
-
-import asyncio
-from datetime import datetime, UTC
 from sqlalchemy import select
 
 from app.domain.enums.trading import StrategyStatus

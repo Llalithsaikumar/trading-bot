@@ -8,8 +8,8 @@ by RiskAgent.evaluate().
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from decimal import Decimal
-from typing import Callable
 
 from app.agents.graph.state import TradingState
 from app.core.config import settings
@@ -20,7 +20,7 @@ RuleFn = Callable[[TradingState], RuleResult]
 
 def check_neutral_signal(state: TradingState) -> RuleResult:
     """Skip execution for NEUTRAL signals — nothing to do."""
-    from app.domain.enums.trading import TradingSignal  # noqa: PLC0415
+    from app.domain.enums.trading import TradingSignal
 
     if state.signal == TradingSignal.NEUTRAL or state.signal is None:
         return False, "Signal is NEUTRAL — no order to execute"

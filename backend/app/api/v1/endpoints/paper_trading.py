@@ -11,9 +11,9 @@ operations that only make sense in paper trading context:
 
 from __future__ import annotations
 
-import uuid
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, Query, status
 
@@ -33,6 +33,9 @@ from app.infrastructure.repositories.portfolio_repository import (
     PortfolioRepository,
 )
 from app.services.paper_trading import risk_metrics as rm
+
+if TYPE_CHECKING:
+    import uuid
 
 router = APIRouter()
 
@@ -106,6 +109,7 @@ async def reset_paper_portfolio(
 
     # Delete positions (cascade will remove child equity rows too)
     from sqlalchemy import delete as sa_delete
+
     from app.domain.models.portfolio import Position
 
     await db.execute(sa_delete(Position).where(Position.portfolio_id == portfolio_id))

@@ -14,13 +14,15 @@ from __future__ import annotations
 import asyncio
 import contextlib
 from abc import ABC, abstractmethod
-from collections.abc import AsyncIterator
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import ccxt.async_support as ccxt
 
 from app.core.exceptions import ExchangeError
 from app.core.logging import logger
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
 
 _WS_RECONNECT_SLEEP: float = 1.0
 

@@ -4,11 +4,12 @@ Shared Pydantic base schemas and reusable types.
 
 from __future__ import annotations
 
-import uuid
-from datetime import datetime
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 T = TypeVar("T")
 
@@ -24,7 +25,7 @@ class TimestampSchema(BaseSchema):
     updated_at: datetime
 
 
-class PaginatedResponse(BaseSchema, Generic[T]):
+class PaginatedResponse[T](BaseSchema):
     """Generic paginated list response envelope."""
 
     items: list[T]

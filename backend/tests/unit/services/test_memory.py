@@ -1,8 +1,10 @@
 import uuid
+
 import pytest
+
 from app.domain.models.memory import LongTermMemory
-from app.services.embedding.embedding_service import EmbeddingService
 from app.infrastructure.repositories.memory_repository import MemoryRepository
+from app.services.embedding.embedding_service import EmbeddingService
 
 
 @pytest.mark.anyio

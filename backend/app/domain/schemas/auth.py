@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-from pydantic import EmailStr
+from typing import TYPE_CHECKING
 
 from app.domain.schemas.common import BaseSchema
-from app.domain.schemas.user import UserResponse
+
+if TYPE_CHECKING:
+    from pydantic import EmailStr
+
+    from app.domain.schemas.user import UserResponse
 
 
 class LoginRequest(BaseSchema):

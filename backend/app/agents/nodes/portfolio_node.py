@@ -12,7 +12,6 @@ from typing import Any
 
 from app.agents.graph.state import PortfolioMetrics, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.portfolio_agent import IPortfolioAgent
 
 
 class PortfolioAgent(BaseAgent):

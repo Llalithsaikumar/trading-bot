@@ -9,15 +9,16 @@ update dict that LangGraph merges back.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
 from decimal import Decimal
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from langgraph.graph import add_messages
 from pydantic import BaseModel, Field
 
-from app.domain.enums.trading import TradingSignal
+if TYPE_CHECKING:
+    from datetime import datetime
 
+    from app.domain.enums.trading import TradingSignal
 
 # ---------------------------------------------------------------------------
 # Sub-models (one per agent's output slice)

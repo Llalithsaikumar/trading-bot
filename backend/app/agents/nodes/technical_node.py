@@ -7,12 +7,13 @@ and wraps them in the modular node interface.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from app.agents.analysis_agent.indicators import compute_all_indicators, ohlcv_to_dataframe
-from app.agents.graph.state import TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.technical_agent import ITechnicalAgent
+
+if TYPE_CHECKING:
+    from app.agents.graph.state import TradingState
 
 
 class TechnicalAgent(BaseAgent):

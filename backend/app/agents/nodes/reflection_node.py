@@ -13,7 +13,6 @@ from typing import Any
 
 from app.agents.graph.state import ReflectionResult, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.reflection_agent import IReflectionAgent
 from app.agents.prompts.templates import REFLECTION_SYSTEM_PROMPT, REFLECTION_USER_TEMPLATE
 
 

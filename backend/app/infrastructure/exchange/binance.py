@@ -44,7 +44,7 @@ class BinanceExchange(CCXTExchangeBase):
         self._ccxt = ccxt.binance(config)
 
     @classmethod
-    def from_settings(cls, market_type: MarketType = "spot") -> "BinanceExchange":
+    def from_settings(cls, market_type: MarketType = "spot") -> BinanceExchange:
         """Construct from application settings."""
         return cls(
             api_key=settings.BINANCE_API_KEY,

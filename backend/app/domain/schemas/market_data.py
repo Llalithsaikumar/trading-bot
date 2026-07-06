@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING
 
 from app.domain.schemas.common import BaseSchema
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 
 class OHLCVResponse(BaseSchema):

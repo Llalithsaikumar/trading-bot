@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import json
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from app.agents.graph.state import TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.decision_agent import IDecisionAgent
 from app.agents.prompts.templates import DECISION_SYSTEM_PROMPT, DECISION_USER_TEMPLATE
 from app.domain.enums.trading import TradingSignal
+
+if TYPE_CHECKING:
+    from app.agents.graph.state import TradingState
 
 
 class DecisionAgent(BaseAgent):

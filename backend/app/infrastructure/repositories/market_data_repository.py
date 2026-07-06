@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
 from app.domain.models.market_data import OHLCV, MarketTicker
 from app.infrastructure.repositories.base import BaseRepository
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class OHLCVRepository(BaseRepository[OHLCV]):

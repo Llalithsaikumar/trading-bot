@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
 
-from pydantic import EmailStr, Field, field_validator
+from pydantic import EmailStr, Field
 
-from app.domain.enums.user import UserRole, UserStatus
 from app.domain.schemas.common import BaseSchema, TimestampSchema
+
+if TYPE_CHECKING:
+    import uuid
+
+    from app.domain.enums.user import UserRole, UserStatus
 
 
 class UserCreate(BaseSchema):

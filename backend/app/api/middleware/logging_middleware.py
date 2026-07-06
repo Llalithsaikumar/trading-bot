@@ -7,10 +7,13 @@ from __future__ import annotations
 
 import time
 import uuid
+from typing import TYPE_CHECKING
 
-from fastapi import Request, Response
 from loguru import logger
 from starlette.middleware.base import BaseHTTPMiddleware
+
+if TYPE_CHECKING:
+    from fastapi import Request, Response
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):

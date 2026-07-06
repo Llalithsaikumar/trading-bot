@@ -24,7 +24,6 @@ def _run(coro):
 
 
 async def _sync_limit_orders_async() -> dict:
-    from decimal import Decimal
 
     from sqlalchemy import select
 
@@ -168,6 +167,7 @@ async def _run_strategy_task_async(strategy_id: str) -> dict:
     import uuid
     from datetime import UTC, datetime
     from decimal import Decimal
+
     from langchain_anthropic import ChatAnthropic
     from langchain_openai import ChatOpenAI
 
@@ -306,14 +306,15 @@ def run_strategy_task(self, strategy_id: str) -> dict:
 async def _reflect_on_completed_trade_async(order_id: str, realized_pnl: float) -> dict:
     import uuid
     from decimal import Decimal
+
     from langchain_anthropic import ChatAnthropic
     from langchain_openai import ChatOpenAI
 
-    from app.infrastructure.database.session import AsyncSessionLocal
-    from app.infrastructure.cache.redis_client import get_redis_client
     from app.agents.interfaces.base import AgentDependencies
     from app.agents.nodes.trade_reflection_node import TradeReflectionAgent
     from app.core.config import settings
+    from app.infrastructure.cache.redis_client import get_redis_client
+    from app.infrastructure.database.session import AsyncSessionLocal
 
     async with AsyncSessionLocal() as session:
         redis = await get_redis_client()

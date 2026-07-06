@@ -1,5 +1,6 @@
 import uuid
 from decimal import Decimal
+
 import pytest
 
 from app.agents.interfaces.base import AgentDependencies

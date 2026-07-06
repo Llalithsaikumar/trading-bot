@@ -5,14 +5,15 @@ Uses redis-py with hiredis parser for performance.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 import redis.asyncio as aioredis
-from redis.asyncio import Redis
 
 from app.core.config import settings
 from app.core.logging import logger
 
+if TYPE_CHECKING:
+    from redis.asyncio import Redis
 
 # ---------------------------------------------------------------------------
 # Client factory

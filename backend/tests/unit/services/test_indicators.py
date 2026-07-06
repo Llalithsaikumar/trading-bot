@@ -1,10 +1,11 @@
 import pandas as pd
+
 from app.agents.analysis_agent.indicators import (
-    compute_rsi,
-    compute_macd,
-    compute_bollinger_bands,
-    compute_atr,
     compute_all_indicators,
+    compute_atr,
+    compute_bollinger_bands,
+    compute_macd,
+    compute_rsi,
 )
 
 

@@ -4,15 +4,15 @@ API v1 router — aggregates all endpoint modules.
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints.auth import router as auth_router
-from app.api.v1.endpoints.users import router as users_router
-from app.api.v1.endpoints.portfolios import router as portfolios_router
-from app.api.v1.endpoints.orders import router as orders_router
-from app.api.v1.endpoints.strategies import router as strategies_router
-from app.api.v1.endpoints.market_data import router as market_data_router
 from app.api.v1.endpoints.alerts import router as alerts_router
-from app.api.v1.endpoints.websocket import router as ws_router
+from app.api.v1.endpoints.auth import router as auth_router
+from app.api.v1.endpoints.market_data import router as market_data_router
+from app.api.v1.endpoints.orders import router as orders_router
 from app.api.v1.endpoints.paper_trading import router as paper_trading_router
+from app.api.v1.endpoints.portfolios import router as portfolios_router
+from app.api.v1.endpoints.strategies import router as strategies_router
+from app.api.v1.endpoints.users import router as users_router
+from app.api.v1.endpoints.websocket import router as ws_router
 
 api_router = APIRouter()
 
