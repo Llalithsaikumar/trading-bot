@@ -1,7 +1,7 @@
 """SQLAlchemy ORM models (domain layer)."""
 
 from app.domain.models.base import Base, TimestampMixin
-from app.domain.models.market_data import OHLCV, MarketTicker
+from app.domain.models.market_data import OHLCV, MarketTicker, OrderBookSnapshot, TechnicalIndicator
 from app.domain.models.memory import LongTermMemory
 from app.domain.models.order import Order
 from app.domain.models.portfolio import Portfolio, Position
@@ -15,6 +15,8 @@ __all__ = [
     "LongTermMemory",
     "MarketTicker",
     "Order",
+    "OrderBookSnapshot",
+    "TechnicalIndicator",
     "Portfolio",
     "Position",
     "Strategy",

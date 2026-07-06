@@ -6,10 +6,9 @@ from typing import TYPE_CHECKING
 
 from app.domain.schemas.common import BaseSchema
 
-if TYPE_CHECKING:
-    from pydantic import EmailStr
+from pydantic import EmailStr
+from app.domain.schemas.user import UserResponse
 
-    from app.domain.schemas.user import UserResponse
 
 
 class LoginRequest(BaseSchema):

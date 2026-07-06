@@ -64,6 +64,7 @@ dependencies = [
     "ta-lib>=0.4.32",
     "email-validator>=2.0.0",
     "pgvector>=0.3.0",
+    "pandas-ta>=0.3.14b0",
 ]
 
 [project.optional-dependencies]

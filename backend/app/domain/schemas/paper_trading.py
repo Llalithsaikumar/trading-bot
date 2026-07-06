@@ -11,8 +11,7 @@ from pydantic import Field
 
 from app.domain.schemas.common import BaseSchema
 
-if TYPE_CHECKING:
-    from datetime import datetime
+from datetime import datetime
 
 
 class PaperPortfolioCreate(BaseSchema):

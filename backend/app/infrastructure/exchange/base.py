@@ -58,7 +58,7 @@ async def ccxt_error_handler(exchange_id: str, operation: str):
 # ---------------------------------------------------------------------------
 
 
-class ExchangeBase(ABC):
+class BaseExchange(ABC):
     """
     Pure abstract interface every exchange adapter must satisfy.
 
@@ -132,6 +132,16 @@ class ExchangeBase(ABC):
     async def fetch_funding_rates(self, symbols: list[str] | None = None) -> dict[str, Any]:
         """Return funding rates for multiple perpetual contracts."""
 
+    @abstractmethod
+    async def fetch_orders(
+        self,
+        symbol: str | None = None,
+        since: int | None = None,
+        limit: int | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        """Return historical orders."""
+
     # ── WebSocket async generators ──────────────────────────────────────────────
 
     @abstractmethod
@@ -169,6 +179,11 @@ class ExchangeBase(ABC):
     @abstractmethod
     async def close(self) -> None:
         """Close all WebSocket connections and HTTP sessions."""
+
+
+# Alias for backward compatibility
+ExchangeBase = BaseExchange
+
 
 
 # ---------------------------------------------------------------------------
@@ -247,6 +262,16 @@ class CCXTExchangeBase(ExchangeBase, ABC):
     async def fetch_funding_rates(self, symbols: list[str] | None = None) -> dict[str, Any]:
         async with ccxt_error_handler(self.exchange_id, "fetch_funding_rates"):
             return await self._ccxt.fetch_funding_rates(symbols)
+
+    async def fetch_orders(
+        self,
+        symbol: str | None = None,
+        since: int | None = None,
+        limit: int | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        async with ccxt_error_handler(self.exchange_id, "fetch_orders"):
+            return await self._ccxt.fetch_orders(symbol, since=since, limit=limit, params=params or {})
 
     # ── WebSocket async generators ──────────────────────────────────────────────
 

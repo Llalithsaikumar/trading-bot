@@ -68,6 +68,9 @@ Analyse the following market snapshot and produce a trading signal for {symbol}.
 - Open Positions: {open_positions_count}
 {open_positions}
 
+## Risk Parameters
+{risk_context}
+
 ## Memory Context (recent history)
 {memory_context}
 
