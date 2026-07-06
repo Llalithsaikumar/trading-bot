@@ -36,7 +36,8 @@ jobs:
 
     - name: Suggest fix when formatting fails
       if: failure()
-      run: echo "Run: cd backend && uv run ruff format ."
+      run: |
+        echo "Run: cd backend && uv run ruff format ."
 
     - name: Lint Checks
       working-directory: backend
