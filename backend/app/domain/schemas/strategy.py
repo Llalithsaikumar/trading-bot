@@ -10,8 +10,7 @@ from pydantic import Field
 from app.domain.enums.trading import StrategyStatus, TimeFrame
 from app.domain.schemas.common import BaseSchema, TimestampSchema
 
-if TYPE_CHECKING:
-    import uuid
+import uuid
 
 
 class StrategyCreate(BaseSchema):

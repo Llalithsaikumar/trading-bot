@@ -46,37 +46,52 @@ async def db_session() -> AsyncGenerator[AsyncSession]:
     await engine.dispose()
 
 
+class MockRedis:
+    def __init__(self) -> None:
+        self.store: dict = {}
+
+    async def get(self, key: str) -> Any:
+        return self.store.get(key)
+
+    async def set(self, key: str, value: Any, ex: Any = None) -> None:
+        self.store[key] = value
+
+    async def setex(self, key: str, ttl: int, value: Any) -> None:
+        self.store[key] = value
+
+    async def delete(self, *keys: str) -> None:
+        for key in keys:
+            self.store.pop(key, None)
+
+    async def ping(self) -> bool:
+        return True
+
+    async def lrange(self, key: str, start: int, stop: int) -> list:
+        return []
+
+    async def lpush(self, key: str, *values: Any) -> int:
+        return len(values)
+
+    async def ltrim(self, key: str, start: int, stop: int) -> None:
+        pass
+
+    async def expire(self, key: str, time: int) -> None:
+        pass
+
+    async def keys(self, pattern: str) -> list[str]:
+        return list(self.store.keys())
+
+
+@pytest.fixture(autouse=True)
+def mock_redis_client(mocker):
+    mock_instance = MockRedis()
+    mocker.patch("app.infrastructure.cache.redis_client.get_redis_client", return_value=mock_instance)
+    return mock_instance
+
+
 @pytest_asyncio.fixture(scope="function")
 async def client(db_session) -> AsyncGenerator[AsyncClient]:
     from app.core.dependencies import get_db, get_redis
-
-    class MockRedis:
-        def __init__(self) -> None:
-            self.store: dict = {}
-
-        async def get(self, key: str) -> Any:
-            return self.store.get(key)
-
-        async def set(self, key: str, value: Any, ex: Any = None) -> None:
-            self.store[key] = value
-
-        async def delete(self, key: str) -> None:
-            self.store.pop(key, None)
-
-        async def ping(self) -> bool:
-            return True
-
-        async def lrange(self, key: str, start: int, stop: int) -> list:
-            return []
-
-        async def lpush(self, key: str, *values: Any) -> int:
-            return len(values)
-
-        async def ltrim(self, key: str, start: int, stop: int) -> None:
-            pass
-
-        async def expire(self, key: str, time: int) -> None:
-            pass
 
     app = create_app()
     app.dependency_overrides[get_db] = lambda: db_session
@@ -88,3 +103,4 @@ async def client(db_session) -> AsyncGenerator[AsyncClient]:
         yield ac
 
     app.dependency_overrides.clear()
+

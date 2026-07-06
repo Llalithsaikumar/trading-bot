@@ -1,16 +1,16 @@
 """
 Decision Agent node — LLM-based trading signal generation.
-
-Builds a rich multi-section prompt from the full TradingState,
-calls the configured LLM (Claude via LangChain), and parses the
-structured JSON response into typed state fields.
+Builds a rich multi-section prompt from the full TradingState (Market, TA, Portfolio, Risk),
+calls the configured LLM using structured outputs, and maps signals to BUY/SELL/WAIT.
 """
 
 from __future__ import annotations
 
-import json
 from decimal import Decimal
+import json
 from typing import TYPE_CHECKING, Any
+
+from pydantic import BaseModel, Field
 
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
 from app.agents.prompts.templates import DECISION_SYSTEM_PROMPT, DECISION_USER_TEMPLATE
@@ -20,17 +20,24 @@ if TYPE_CHECKING:
     from app.agents.graph.state import TradingState
 
 
+class TradingDecision(BaseModel):
+    """Structured output schema for LLM decisions."""
+
+    signal: str = Field(description="Actionable trading signal: MUST be one of 'BUY', 'SELL', or 'WAIT'")
+    confidence: float = Field(description="Confidence score for the signal, between 0.0 and 1.0")
+    reasoning: str = Field(description="Step-by-step technical analysis reasoning explaining the decision")
+    suggested_entry: str | None = Field(default=None, description="Suggested entry price if BUY/SELL")
+    suggested_stop_loss: str | None = Field(default=None, description="Suggested stop loss price if BUY/SELL")
+    suggested_take_profit: str | None = Field(default=None, description="Suggested take profit price if BUY/SELL")
+
+
 class DecisionAgent(BaseAgent):
     """
     Implements IDecisionAgent.
-
     Graph position: sixth (after PortfolioAgent).
     Populates: state.signal, state.confidence, state.reasoning,
                state.analysis, state.suggested_entry,
                state.suggested_stop_loss, state.suggested_take_profit
-
-    Uses the LLM from AgentDependencies.llm if available; otherwise
-    falls back to a deterministic NEUTRAL signal stub.
     """
 
     def __init__(self, deps: AgentDependencies) -> None:
@@ -84,6 +91,15 @@ class DecisionAgent(BaseAgent):
         positions_str = self._format_positions(state.open_positions)
         memory_str = self._format_memory(state.memory_context)
 
+        # Build Risk context input string
+        risk_context_str = (
+            f"- Drawdown Limit: 10%\n"
+            f"- Account Risk Limit: 1% per trade\n"
+            f"- Leverage Limit: 2x\n"
+            f"- Max Open Positions: 5\n"
+            f"- Daily Loss Limit: 5.0%"
+        )
+
         return DECISION_USER_TEMPLATE.format(
             symbol=primary_symbol,
             exchange=state.exchange,
@@ -97,13 +113,14 @@ class DecisionAgent(BaseAgent):
             ohlcv_count=len(ohlcv),
             ohlcv_table=ohlcv_table,
             indicators=indicator_str,
-            sentiment_score=round(state.sentiment.overall_score, 3),
-            sentiment_label=state.sentiment.label,
+            sentiment_score=round(state.sentiment.overall_score, 3) if state.sentiment else 0.0,
+            sentiment_label=state.sentiment.label if state.sentiment else "neutral",
             headlines=headlines,
             available_balance=state.available_balance,
             open_positions_count=len(state.open_positions),
             open_positions=positions_str,
             memory_context=memory_str,
+            risk_context=risk_context_str,
         )
 
     async def parse_llm_response(
@@ -112,7 +129,15 @@ class DecisionAgent(BaseAgent):
     ) -> tuple[TradingSignal, float, str, Decimal | None, Decimal | None, Decimal | None]:
         try:
             data = json.loads(raw_response)
-            signal = TradingSignal(data.get("signal", "neutral"))
+            sig_str = str(data.get("signal", "WAIT")).upper()
+
+            if sig_str == "BUY":
+                signal = TradingSignal.BUY
+            elif sig_str == "SELL":
+                signal = TradingSignal.SELL
+            else:
+                signal = TradingSignal.NEUTRAL
+
             confidence = float(data.get("confidence", 0.0))
             reasoning = data.get("reasoning", "")
             entry = Decimal(str(data["suggested_entry"])) if data.get("suggested_entry") else None
@@ -138,10 +163,37 @@ class DecisionAgent(BaseAgent):
     ) -> tuple[TradingSignal, float, str, Decimal | None, Decimal | None, Decimal | None]:
         if self._deps.llm is None:
             # No LLM configured — return a safe neutral stub
+            self._log_warning("LLM not configured; using neutral WAIT stub")
             return TradingSignal.NEUTRAL, 0.0, "LLM not configured", None, None, None
 
         prompt = await self.build_context_prompt(state)
         from langchain_core.messages import HumanMessage, SystemMessage
+
+        # Attempt structured output using LangChain with fallback to raw JSON string parsing
+        if hasattr(self._deps.llm, "with_structured_output"):
+            try:
+                structured_llm = self._deps.llm.with_structured_output(TradingDecision)
+                res = await structured_llm.ainvoke(
+                    [
+                        SystemMessage(content=DECISION_SYSTEM_PROMPT),
+                        HumanMessage(content=prompt),
+                    ]
+                )
+                sig_str = res.signal.upper()
+                if sig_str == "BUY":
+                    signal = TradingSignal.BUY
+                elif sig_str == "SELL":
+                    signal = TradingSignal.SELL
+                else:
+                    signal = TradingSignal.NEUTRAL
+
+                entry = Decimal(str(res.suggested_entry)) if res.suggested_entry else None
+                sl = Decimal(str(res.suggested_stop_loss)) if res.suggested_stop_loss else None
+                tp = Decimal(str(res.suggested_take_profit)) if res.suggested_take_profit else None
+
+                return signal, res.confidence, res.reasoning, entry, sl, tp
+            except Exception as e:
+                self._log_warning("structured output invocation failed; falling back", error=str(e))
 
         response = await self._deps.llm.ainvoke(
             [
@@ -149,7 +201,6 @@ class DecisionAgent(BaseAgent):
                 HumanMessage(content=prompt),
             ]
         )
-        # Handle cases where response.content is not a string
         content = getattr(response, "content", "")
         if not isinstance(content, str):
             content = str(content)

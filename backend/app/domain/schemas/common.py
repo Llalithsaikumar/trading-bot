@@ -8,8 +8,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
-if TYPE_CHECKING:
-    from datetime import datetime
+from datetime import datetime
 
 T = TypeVar("T")
 

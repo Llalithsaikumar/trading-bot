@@ -8,10 +8,9 @@ from pydantic import EmailStr, Field
 
 from app.domain.schemas.common import BaseSchema, TimestampSchema
 
-if TYPE_CHECKING:
-    import uuid
+import uuid
+from app.domain.enums.user import UserRole, UserStatus
 
-    from app.domain.enums.user import UserRole, UserStatus
 
 
 class UserCreate(BaseSchema):
