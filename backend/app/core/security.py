@@ -13,7 +13,6 @@ from jose import jwt
 
 from app.core.config import settings
 
-
 # ─── Password helpers ──────────────────────────────────────────────────────────
 def hash_password(plain: str) -> str:
     """Return bcrypt hash of a plaintext password using native bcrypt."""

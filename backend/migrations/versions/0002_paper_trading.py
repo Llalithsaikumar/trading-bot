@@ -8,6 +8,7 @@ Revises: 0001_initial_schema
 Create Date: 2026-07-05
 """
 
+
 from __future__ import annotations
 
 import sqlalchemy as sa

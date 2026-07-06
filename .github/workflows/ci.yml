@@ -30,11 +30,17 @@ jobs:
         cd backend
         uv sync --extra dev
 
-    - name: Lint and Format Checks
-      run: |
-        cd backend
-        uv run ruff format --check .
-        uv run ruff check .
+    - name: Check formatting
+      working-directory: backend
+      run: uv run ruff format --check .
+
+    - name: Suggest fix when formatting fails
+      if: failure()
+      run: echo "Run: cd backend && uv run ruff format ."
+
+    - name: Lint Checks
+      working-directory: backend
+      run: uv run ruff check .
 
     - name: Run Test Suite
       run: |

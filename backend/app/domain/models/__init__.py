@@ -1,6 +1,5 @@
 """SQLAlchemy ORM models (domain layer)."""
 
-from app.domain.models.alert import Alert
 from app.domain.models.base import Base, TimestampMixin
 from app.domain.models.market_data import OHLCV, MarketTicker
 from app.domain.models.memory import LongTermMemory
