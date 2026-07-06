@@ -1,0 +1,71 @@
+version: "3.9"
+
+# Development overrides – mount source, enable hot-reload, expose debug ports
+services:
+
+  backend:
+    build:
+      target: development
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir app
+    volumes:
+      - ./backend:/app
+    environment:
+      APP_ENV: development
+      APP_DEBUG: "true"
+
+  worker:
+    build:
+      target: development
+    command: celery -A app.workers.celery_app worker --loglevel=debug --concurrency=2 -Q default,trading,market_data
+    volumes:
+      - ./backend:/app
+
+  beat:
+    build:
+      target: development
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      target: development
+    command: npm run dev -- --host
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+      VITE_WS_BASE_URL: ws://localhost:8000
+
+  # Dev-only: Mailhog for e-mail testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: trader_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - trader_net
+
+  # Dev-only: pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: trader_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@trader.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - trader_net
+
+  # Dev-only: RedisInsight
+  redis_insight:
+    image: redislabs/redisinsight:latest
+    container_name: trader_redis_insight
+    ports:
+      - "8001:8001"
+    networks:
+      - trader_net

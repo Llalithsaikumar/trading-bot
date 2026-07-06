@@ -1,0 +1,1 @@
+# CryptoTrader AI — Backend Application
