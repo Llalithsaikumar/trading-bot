@@ -4,13 +4,15 @@ Market Agent node — fetches OHLCV, tickers, and order books.
 Calls the exchange via the injected ExchangeClient and populates
 ohlcv, tickers, and order_book in TradingState.
 """
+
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from app.agents.graph.state import TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.market_agent import IMarketAgent
+
+if TYPE_CHECKING:
+    from app.agents.graph.state import TradingState
 
 
 class MarketAgent(BaseAgent):
@@ -37,9 +39,7 @@ class MarketAgent(BaseAgent):
             order_book: dict[str, dict[str, Any]] = {}
 
             for symbol in state.symbols:
-                ohlcv[symbol] = await self.fetch_ohlcv(
-                    state.exchange, symbol, state.timeframe
-                )
+                ohlcv[symbol] = await self.fetch_ohlcv(state.exchange, symbol, state.timeframe)
                 tickers[symbol] = await self.fetch_ticker(state.exchange, symbol)
                 order_book[symbol] = await self.fetch_order_book(state.exchange, symbol)
 
@@ -104,4 +104,3 @@ class MarketAgent(BaseAgent):
             "bids": [[float(b[0]), float(b[1])] for b in raw.get("bids", [])[:depth]],
             "asks": [[float(a[0]), float(a[1])] for a in raw.get("asks", [])[:depth]],
         }
-

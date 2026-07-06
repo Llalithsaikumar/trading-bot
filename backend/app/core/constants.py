@@ -1,4 +1,5 @@
 """Application-wide constants (no config — pure literals)."""
+
 from __future__ import annotations
 
 # Queue names

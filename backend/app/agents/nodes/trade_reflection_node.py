@@ -1,17 +1,21 @@
 """Trade Reflection Agent — post-fill trade analysis and memory update."""
+
 from __future__ import annotations
 
 import json
-from decimal import Decimal
-from typing import Any
-import uuid
+from typing import TYPE_CHECKING, Any
+
 from loguru import logger
 
-from app.agents.interfaces.base import AgentDependencies
-from app.domain.models.order import Order
-from app.domain.models.strategy import Strategy, StrategyExecution
 from app.domain.models.memory import LongTermMemory
-from app.infrastructure.repositories.memory_repository import MemoryRepository
+from app.domain.models.order import Order
+from app.domain.models.strategy import StrategyExecution
+
+if TYPE_CHECKING:
+    import uuid
+    from decimal import Decimal
+
+    from app.agents.interfaces.base import AgentDependencies
 
 TRADE_REFLECTION_SYSTEM_PROMPT = """
 You are a senior trading supervisor and quantitative analyst.
@@ -101,9 +105,7 @@ class TradeReflectionAgent:
             run_id = execution.run_id
 
             stmt_mem = (
-                select(LongTermMemory)
-                .where(LongTermMemory.run_id == execution.run_id)
-                .limit(1)
+                select(LongTermMemory).where(LongTermMemory.run_id == execution.run_id).limit(1)
             )
             result_mem = await self._deps.session.execute(stmt_mem)
             mem_record = result_mem.scalar_one_or_none()

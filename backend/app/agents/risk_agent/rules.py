@@ -5,10 +5,11 @@ Each rule is a callable that receives TradingState and returns
 (passed: bool, note: str).  Rules are ordered and applied sequentially
 by RiskAgent.evaluate().
 """
+
 from __future__ import annotations
 
+from collections.abc import Callable
 from decimal import Decimal
-from typing import Callable
 
 from app.agents.graph.state import TradingState
 from app.core.config import settings
@@ -19,7 +20,7 @@ RuleFn = Callable[[TradingState], RuleResult]
 
 def check_neutral_signal(state: TradingState) -> RuleResult:
     """Skip execution for NEUTRAL signals — nothing to do."""
-    from app.domain.enums.trading import TradingSignal  # noqa: PLC0415
+    from app.domain.enums.trading import TradingSignal
 
     if state.signal == TradingSignal.NEUTRAL or state.signal is None:
         return False, "Signal is NEUTRAL — no order to execute"
@@ -75,10 +76,10 @@ def check_position_size(state: TradingState) -> RuleResult:
 # Ordered rule list applied by RiskAgent.evaluate()
 # ---------------------------------------------------------------------------
 RISK_RULES: list[RuleFn] = [
-    check_neutral_signal,        # Fast-exit for NEUTRAL signals
-    check_sufficient_balance,    # No balance → no trade
-    check_signal_confidence,     # Low confidence → no trade
-    check_daily_loss_limit,      # Daily loss circuit breaker
-    check_max_open_positions,    # Concurrency limit
-    check_position_size,         # Size validation (TODO: full impl)
+    check_neutral_signal,  # Fast-exit for NEUTRAL signals
+    check_sufficient_balance,  # No balance → no trade
+    check_signal_confidence,  # Low confidence → no trade
+    check_daily_loss_limit,  # Daily loss circuit breaker
+    check_max_open_positions,  # Concurrency limit
+    check_position_size,  # Size validation (TODO: full impl)
 ]

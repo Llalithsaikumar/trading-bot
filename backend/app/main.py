@@ -4,10 +4,11 @@ Application entry point.
 Initialises FastAPI, registers routers, mounts middleware,
 and wires up lifespan events (DB pool, Redis, Prometheus).
 """
+
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
+from typing import TYPE_CHECKING
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +23,9 @@ from app.core.exceptions import (
 )
 from app.core.logging import setup_logging
 
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
+
 
 # ---------------------------------------------------------------------------
 # Lifespan – startup / shutdown
@@ -31,19 +35,19 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Manage application lifecycle: open connections on startup, close on shutdown."""
     setup_logging()
 
-    from loguru import logger  # noqa: PLC0415
+    from loguru import logger
 
     # ── Startup ──────────────────────────────────────────────────────────────
     logger.info("Starting {app_name} ({env})", app_name=settings.APP_NAME, env=settings.APP_ENV)
 
-    from app.infrastructure.cache.redis_client import get_redis_client  # noqa: PLC0415
+    from app.infrastructure.cache.redis_client import get_redis_client
 
     await get_redis_client()
     logger.info("Redis ready")
 
     if settings.PROMETHEUS_ENABLED:
         try:
-            from prometheus_fastapi_instrumentator import Instrumentator  # noqa: PLC0415
+            from prometheus_fastapi_instrumentator import Instrumentator
 
             Instrumentator().instrument(app).expose(app, endpoint="/metrics", tags=["Monitoring"])
             logger.info("Prometheus metrics exposed at /metrics")
@@ -55,7 +59,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
 
     # ── Shutdown ─────────────────────────────────────────────────────────────
-    from app.infrastructure.cache.redis_client import close_redis  # noqa: PLC0415
+    from app.infrastructure.cache.redis_client import close_redis
 
     await close_redis()
     logger.info("Application shutdown complete")
@@ -84,12 +88,12 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    from app.api.middleware.logging_middleware import LoggingMiddleware  # noqa: PLC0415
+    from app.api.middleware.logging_middleware import LoggingMiddleware
 
     application.add_middleware(LoggingMiddleware)
 
     # ── Exception handlers ───────────────────────────────────────────────────
-    from app.api.middleware.exception_handler import (  # noqa: PLC0415
+    from app.api.middleware.exception_handler import (
         app_error_handler,
         auth_error_handler,
         forbidden_handler,
@@ -104,7 +108,7 @@ def create_app() -> FastAPI:
     application.add_exception_handler(RiskLimitExceededError, risk_limit_handler)  # type: ignore[arg-type]
 
     # ── Routers ──────────────────────────────────────────────────────────────
-    from app.api.v1 import api_router  # noqa: PLC0415
+    from app.api.v1 import api_router
 
     application.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
@@ -129,17 +133,16 @@ async def health_readiness() -> dict[str, object]:
     Returns 200 only when all dependencies (DB, Redis) are reachable.
     Returns 503 with details if any dependency is down.
     """
-    import asyncio  # noqa: PLC0415
+    import asyncio
 
-    from fastapi import HTTPException  # noqa: PLC0415
-    from fastapi.responses import JSONResponse  # noqa: PLC0415
+    from fastapi.responses import JSONResponse
 
     checks: dict[str, str] = {}
     healthy = True
 
     # ── Redis ────────────────────────────────────────────────────────────────
     try:
-        from app.infrastructure.cache.redis_client import get_redis_client  # noqa: PLC0415
+        from app.infrastructure.cache.redis_client import get_redis_client
 
         redis = await get_redis_client()
         await asyncio.wait_for(redis.ping(), timeout=2.0)
@@ -150,9 +153,9 @@ async def health_readiness() -> dict[str, object]:
 
     # ── Database ─────────────────────────────────────────────────────────────
     try:
-        from sqlalchemy import text  # noqa: PLC0415
+        from sqlalchemy import text
 
-        from app.infrastructure.database.session import engine  # noqa: PLC0415
+        from app.infrastructure.database.session import engine
 
         async with engine.connect() as conn:
             await asyncio.wait_for(conn.execute(text("SELECT 1")), timeout=2.0)

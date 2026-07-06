@@ -4,6 +4,7 @@ News Agent node — fetches news and computes market sentiment.
 Aggregates recent news for the traded symbols into a MarketSentiment
 object and optionally uses an LLM for nuanced sentiment scoring.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -11,7 +12,6 @@ from typing import Any
 
 from app.agents.graph.state import MarketSentiment, NewsItem, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.news_agent import INewsAgent
 
 
 class NewsAgent(BaseAgent):
@@ -56,8 +56,16 @@ class NewsAgent(BaseAgent):
 
         mock_headlines = [
             (f"{primary} hits new weekly high amid positive regulatory signals", "CoinDesk", 0.6),
-            (f"Quantitative analysts debate {primary} short-term resistance level", "Cointelegraph", 0.1),
-            (f"Macro headwinds trigger slight consolidation in {primary} markets", "Bloomberg", -0.2),
+            (
+                f"Quantitative analysts debate {primary} short-term resistance level",
+                "Cointelegraph",
+                0.1,
+            ),
+            (
+                f"Macro headwinds trigger slight consolidation in {primary} markets",
+                "Bloomberg",
+                -0.2,
+            ),
             (f"Institutional interest in {primary} spot products remains robust", "Reuters", 0.4),
         ]
 
@@ -78,7 +86,6 @@ class NewsAgent(BaseAgent):
 
         return items[:limit]
 
-
     async def compute_sentiment(
         self,
         news_items: list[NewsItem],
@@ -95,11 +102,7 @@ class NewsAgent(BaseAgent):
             )
 
         avg_score = sum(item.sentiment_score for item in news_items) / len(news_items)
-        label = (
-            "bullish" if avg_score > 0.2
-            else "bearish" if avg_score < -0.2
-            else "neutral"
-        )
+        label = "bullish" if avg_score > 0.2 else "bearish" if avg_score < -0.2 else "neutral"
         return MarketSentiment(
             overall_score=avg_score,
             label=label,

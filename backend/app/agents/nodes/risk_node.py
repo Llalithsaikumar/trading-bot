@@ -5,13 +5,13 @@ Reuses the functional risk rule definitions from
 app/agents/risk_agent/rules.py and adds the structured RiskViolation
 output and risk_score computation.
 """
+
 from __future__ import annotations
 
 from typing import Any
 
 from app.agents.graph.state import RiskViolation, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.risk_agent import IRiskAgent
 from app.agents.risk_agent.rules import RISK_RULES
 
 
@@ -84,8 +84,5 @@ class RiskAgent(BaseAgent):
         if not violations:
             return 1.0
         # Each violation reduces the score; critical ones have double weight
-        penalty = sum(
-            0.4 if v.severity == "critical" else 0.2
-            for v in violations
-        )
+        penalty = sum(0.4 if v.severity == "critical" else 0.2 for v in violations)
         return max(0.0, 1.0 - penalty)

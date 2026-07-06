@@ -6,17 +6,22 @@ Usage:
     exchange = get_exchange()                 # uses settings.EXCHANGE_DEFAULT
     await close_all_exchanges()              # call on app shutdown
 """
+
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from app.core.config import settings
 from app.core.exceptions import ExchangeError
 from app.core.logging import logger
 
-from .base import ExchangeBase
 from .binance import BinanceExchange
 from .bybit import BybitExchange
 from .hyperliquid import HyperliquidExchange
 from .okx import OKXExchange
+
+if TYPE_CHECKING:
+    from .base import ExchangeBase
 
 _SUPPORTED: frozenset[str] = frozenset({"binance", "bybit", "okx", "hyperliquid"})
 _pool: dict[str, ExchangeBase] = {}
@@ -34,8 +39,7 @@ def _build(exchange_id: str) -> ExchangeBase:
             return HyperliquidExchange.from_settings()
         case _:
             raise ExchangeError(
-                f"Exchange '{exchange_id}' is not supported. "
-                f"Supported: {sorted(_SUPPORTED)}",
+                f"Exchange '{exchange_id}' is not supported. Supported: {sorted(_SUPPORTED)}",
                 code="EXCHANGE_NOT_FOUND",
             )
 

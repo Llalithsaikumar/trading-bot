@@ -1,4 +1,5 @@
 """OKX exchange adapter (spot + perps + options via unified account)."""
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -47,7 +48,7 @@ class OKXExchange(CCXTExchangeBase):
         self._ccxt = ccxt.okx(config)
 
     @classmethod
-    def from_settings(cls, market_type: MarketType = "swap") -> "OKXExchange":
+    def from_settings(cls, market_type: MarketType = "swap") -> OKXExchange:
         """Construct from application settings."""
         return cls(
             api_key=settings.OKX_API_KEY,

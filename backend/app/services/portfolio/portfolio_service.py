@@ -1,17 +1,20 @@
 """
 PortfolioService — CRUD for user portfolios.
 """
+
 from __future__ import annotations
 
 import uuid
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import TYPE_CHECKING
 
 from app.core.exceptions import AuthorizationError, NotFoundError
 from app.domain.models.portfolio import Portfolio
 from app.domain.schemas.common import PaginatedResponse
 from app.domain.schemas.trading import PortfolioCreate, PortfolioResponse
 from app.infrastructure.repositories.portfolio_repository import PortfolioRepository
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class PortfolioService:
@@ -32,9 +35,7 @@ class PortfolioService:
         portfolio = await self._repo.create(portfolio)
         return PortfolioResponse.model_validate(portfolio)
 
-    async def get_portfolio(
-        self, portfolio_id: uuid.UUID, user_id: uuid.UUID
-    ) -> PortfolioResponse:
+    async def get_portfolio(self, portfolio_id: uuid.UUID, user_id: uuid.UUID) -> PortfolioResponse:
         portfolio = await self._repo.get_with_positions(portfolio_id)
         if portfolio is None:
             raise NotFoundError("Portfolio not found", code="PORTFOLIO_NOT_FOUND")

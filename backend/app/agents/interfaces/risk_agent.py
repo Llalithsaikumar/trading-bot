@@ -1,9 +1,11 @@
 """IRiskAgent — contract for validating trading signals against risk rules."""
+
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from app.agents.graph.state import RiskViolation, TradingState
+if TYPE_CHECKING:
+    from app.agents.graph.state import RiskViolation, TradingState
 
 
 @runtime_checkable

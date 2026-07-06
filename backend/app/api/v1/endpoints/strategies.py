@@ -1,13 +1,17 @@
 """Strategy CRUD + control endpoints (not yet implemented)."""
+
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.dependencies import Pagination, get_current_active_user
 from app.domain.schemas.common import MessageResponse, PaginatedResponse
 from app.domain.schemas.strategy import StrategyCreate, StrategyResponse, StrategyUpdate
+
+if TYPE_CHECKING:
+    import uuid
 
 router = APIRouter()
 

@@ -1,11 +1,12 @@
 """Strategy and StrategyExecution ORM models."""
+
 from __future__ import annotations
 
 import uuid
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import ForeignKey, JSON, Numeric, String, Text
+from sqlalchemy import JSON, ForeignKey, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +22,7 @@ class Strategy(UUIDMixin, TimestampMixin, Base):
     Represents a trading strategy configuration.
     The actual logic is executed by LangGraph agents.
     """
+
     __tablename__ = "strategies"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
@@ -63,6 +65,7 @@ class Strategy(UUIDMixin, TimestampMixin, Base):
 
 class StrategyExecution(UUIDMixin, TimestampMixin, Base):
     """Records each LangGraph agent run for a strategy."""
+
     __tablename__ = "strategy_executions"
 
     strategy_id: Mapped[uuid.UUID] = mapped_column(

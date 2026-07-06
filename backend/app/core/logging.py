@@ -2,6 +2,7 @@
 Structured logging setup using Loguru.
 Outputs JSON in production, coloured text in development.
 """
+
 from __future__ import annotations
 
 import sys

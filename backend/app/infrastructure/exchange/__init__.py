@@ -6,13 +6,13 @@ from .hyperliquid import HyperliquidExchange
 from .okx import OKXExchange
 
 __all__ = [
-    "ExchangeBase",
-    "CCXTExchangeBase",
-    "ccxt_error_handler",
     "BinanceExchange",
     "BybitExchange",
-    "OKXExchange",
+    "CCXTExchangeBase",
+    "ExchangeBase",
     "HyperliquidExchange",
-    "get_exchange",
+    "OKXExchange",
+    "ccxt_error_handler",
     "close_all_exchanges",
+    "get_exchange",
 ]

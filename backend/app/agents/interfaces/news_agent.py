@@ -1,9 +1,11 @@
 """INewsAgent — contract for fetching news and computing market sentiment."""
+
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from app.agents.graph.state import MarketSentiment, NewsItem
+if TYPE_CHECKING:
+    from app.agents.graph.state import MarketSentiment, NewsItem
 
 
 @runtime_checkable

@@ -1,9 +1,10 @@
 """Portfolio, Position, and EquityPoint ORM models."""
+
 from __future__ import annotations
 
-import uuid
 from datetime import UTC, datetime
 from decimal import Decimal
+import uuid
 from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, Numeric, String
@@ -29,7 +30,9 @@ class Portfolio(UUIDMixin, TimestampMixin, Base):
 
     # Balances
     initial_balance: Mapped[Decimal] = mapped_column(
-        Numeric(20, 8), default=Decimal("0"), nullable=False,
+        Numeric(20, 8),
+        default=Decimal("0"),
+        nullable=False,
         comment="Starting balance set at creation; used to compute total return",
     )
     total_value_usdt: Mapped[Decimal] = mapped_column(Numeric(20, 8), default=Decimal("0"))

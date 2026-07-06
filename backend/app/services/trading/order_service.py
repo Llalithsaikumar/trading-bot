@@ -4,11 +4,10 @@ OrderService — place, cancel, and track orders.
 Routes paper-trading orders through PaperTradingEngine.
 Live trading path is reserved for future implementation.
 """
+
 from __future__ import annotations
 
-import uuid
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import TYPE_CHECKING
 
 from app.core.exceptions import NotFoundError
 from app.domain.enums.trading import OrderStatus
@@ -16,6 +15,11 @@ from app.domain.schemas.trading import OrderCreate, OrderResponse
 from app.infrastructure.repositories.order_repository import OrderRepository
 from app.infrastructure.repositories.portfolio_repository import PortfolioRepository
 from app.services.paper_trading.engine import PaperTradingEngine
+
+if TYPE_CHECKING:
+    import uuid
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class OrderService:

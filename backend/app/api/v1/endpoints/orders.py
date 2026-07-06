@@ -1,7 +1,8 @@
 """Order placement and history endpoints."""
+
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, Query, status
 
@@ -9,6 +10,9 @@ from app.core.dependencies import PaginationParams, get_current_active_user, get
 from app.domain.schemas.common import PaginatedResponse
 from app.domain.schemas.trading import OrderCreate, OrderResponse
 from app.services.trading.order_service import OrderService
+
+if TYPE_CHECKING:
+    import uuid
 
 router = APIRouter()
 

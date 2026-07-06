@@ -2,15 +2,16 @@
 JWT token creation / verification and password hashing.
 No business logic — pure crypto utilities consumed by auth service.
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from jose import JWTError, jwt
 import bcrypt
-from app.core.config import settings
+from jose import jwt
 
+from app.core.config import settings
 
 
 # ─── Password helpers ──────────────────────────────────────────────────────────
@@ -30,7 +31,6 @@ def verify_password(plain: str, hashed: str) -> bool:
         return bcrypt.checkpw(pw_bytes, hashed_bytes)
     except Exception:
         return False
-
 
 
 # ─── JWT helpers ───────────────────────────────────────────────────────────────

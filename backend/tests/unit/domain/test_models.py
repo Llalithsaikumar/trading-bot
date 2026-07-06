@@ -1,4 +1,5 @@
 """Unit tests for domain model instantiation and constraints."""
+
 from __future__ import annotations
 
 from app.domain.enums.trading import OrderSide, OrderType

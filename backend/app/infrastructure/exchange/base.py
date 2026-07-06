@@ -8,18 +8,21 @@ Usage (WebSocket):
     async for ticker in exchange.watch_ticker("BTC/USDT"):
         process(ticker)
 """
+
 from __future__ import annotations
 
 import asyncio
 import contextlib
 from abc import ABC, abstractmethod
-from collections.abc import AsyncIterator
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import ccxt.async_support as ccxt
 
 from app.core.exceptions import ExchangeError
 from app.core.logging import logger
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
 
 _WS_RECONNECT_SLEEP: float = 1.0
 
@@ -27,6 +30,7 @@ _WS_RECONNECT_SLEEP: float = 1.0
 # ---------------------------------------------------------------------------
 # Shared CCXT → domain error translator
 # ---------------------------------------------------------------------------
+
 
 @contextlib.asynccontextmanager
 async def ccxt_error_handler(exchange_id: str, operation: str):
@@ -52,6 +56,7 @@ async def ccxt_error_handler(exchange_id: str, operation: str):
 # ---------------------------------------------------------------------------
 # Pure abstract interface
 # ---------------------------------------------------------------------------
+
 
 class ExchangeBase(ABC):
     """
@@ -124,9 +129,7 @@ class ExchangeBase(ABC):
         """Return the current funding rate for a perpetual contract."""
 
     @abstractmethod
-    async def fetch_funding_rates(
-        self, symbols: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def fetch_funding_rates(self, symbols: list[str] | None = None) -> dict[str, Any]:
         """Return funding rates for multiple perpetual contracts."""
 
     # ── WebSocket async generators ──────────────────────────────────────────────
@@ -144,9 +147,7 @@ class ExchangeBase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def watch_order_book(
-        self, symbol: str, limit: int = 20
-    ) -> AsyncIterator[dict[str, Any]]:
+    async def watch_order_book(self, symbol: str, limit: int = 20) -> AsyncIterator[dict[str, Any]]:
         """Yield order book snapshots on each update."""
         raise NotImplementedError
 
@@ -161,9 +162,7 @@ class ExchangeBase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def watch_orders(
-        self, symbol: str | None = None
-    ) -> AsyncIterator[list[dict[str, Any]]]:
+    async def watch_orders(self, symbol: str | None = None) -> AsyncIterator[list[dict[str, Any]]]:
         """Yield order-status updates (authenticated)."""
         raise NotImplementedError
 
@@ -175,6 +174,7 @@ class ExchangeBase(ABC):
 # ---------------------------------------------------------------------------
 # Shared CCXT implementation — subclasses provide exchange_id + set _ccxt
 # ---------------------------------------------------------------------------
+
 
 class CCXTExchangeBase(ExchangeBase, ABC):
     """
@@ -203,9 +203,7 @@ class CCXTExchangeBase(ExchangeBase, ABC):
         since: int | None = None,
     ) -> list[list[Any]]:
         async with ccxt_error_handler(self.exchange_id, "fetch_ohlcv"):
-            return await self._ccxt.fetch_ohlcv(
-                symbol, timeframe, since=since, limit=limit
-            )
+            return await self._ccxt.fetch_ohlcv(symbol, timeframe, since=since, limit=limit)
 
     async def create_market_order(
         self,
@@ -215,9 +213,7 @@ class CCXTExchangeBase(ExchangeBase, ABC):
         params: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         async with ccxt_error_handler(self.exchange_id, "create_market_order"):
-            return await self._ccxt.create_market_order(
-                symbol, side, amount, params=params or {}
-            )
+            return await self._ccxt.create_market_order(symbol, side, amount, params=params or {})
 
     async def create_limit_order(
         self,
@@ -248,9 +244,7 @@ class CCXTExchangeBase(ExchangeBase, ABC):
         async with ccxt_error_handler(self.exchange_id, "fetch_funding_rate"):
             return await self._ccxt.fetch_funding_rate(symbol)
 
-    async def fetch_funding_rates(
-        self, symbols: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def fetch_funding_rates(self, symbols: list[str] | None = None) -> dict[str, Any]:
         async with ccxt_error_handler(self.exchange_id, "fetch_funding_rates"):
             return await self._ccxt.fetch_funding_rates(symbols)
 
@@ -317,9 +311,7 @@ class CCXTExchangeBase(ExchangeBase, ABC):
             try:
                 yield await self._ccxt.watch_balance()
             except ccxt.NetworkError:
-                logger.warning(
-                    "watch_balance reconnecting", exchange=self.exchange_id
-                )
+                logger.warning("watch_balance reconnecting", exchange=self.exchange_id)
                 await asyncio.sleep(_WS_RECONNECT_SLEEP)
             except ccxt.BaseError as exc:
                 raise ExchangeError(str(exc), code="WS_ERROR") from exc
@@ -329,9 +321,7 @@ class CCXTExchangeBase(ExchangeBase, ABC):
             try:
                 yield await self._ccxt.watch_orders(symbol)
             except ccxt.NetworkError:
-                logger.warning(
-                    "watch_orders reconnecting", exchange=self.exchange_id
-                )
+                logger.warning("watch_orders reconnecting", exchange=self.exchange_id)
                 await asyncio.sleep(_WS_RECONNECT_SLEEP)
             except ccxt.BaseError as exc:
                 raise ExchangeError(str(exc), code="WS_ERROR") from exc

@@ -6,12 +6,13 @@ Market orders experience price impact; limit orders do not.
 FIXED model: constant basis-point slippage regardless of order size.
 VOLUME_IMPACT model: slippage increases as order size grows relative to daily volume.
 """
+
 from __future__ import annotations
 
 from decimal import Decimal
 from enum import StrEnum
 
-_DEFAULT_BPS: Decimal = Decimal("10")   # 0.10 % default slippage
+_DEFAULT_BPS: Decimal = Decimal("10")  # 0.10 % default slippage
 _MAX_IMPACT_BPS: Decimal = Decimal("50")  # 0.50 % hard cap
 
 
@@ -50,10 +51,7 @@ class SlippageCalculator:
 
         slippage_pct = effective_bps / Decimal("10000")
 
-        if side == "buy":
-            fill = mid_price * (1 + slippage_pct)
-        else:
-            fill = mid_price * (1 - slippage_pct)
+        fill = mid_price * (1 + slippage_pct) if side == "buy" else mid_price * (1 - slippage_pct)
 
         fill = fill.quantize(Decimal("0.00000001"))
         cost = (abs(fill - mid_price) * quantity).quantize(Decimal("0.00000001"))

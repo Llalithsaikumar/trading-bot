@@ -1,11 +1,14 @@
 """IDecisionAgent — contract for LLM-based trading signal generation."""
+
 from __future__ import annotations
 
-from decimal import Decimal
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from app.agents.graph.state import TradingState
-from app.domain.enums.trading import TradingSignal
+if TYPE_CHECKING:
+    from decimal import Decimal
+
+    from app.agents.graph.state import TradingState
+    from app.domain.enums.trading import TradingSignal
 
 
 @runtime_checkable

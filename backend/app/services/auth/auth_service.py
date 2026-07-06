@@ -1,13 +1,13 @@
 """
 AuthService — registration, authentication, token lifecycle.
 """
+
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from jose import JWTError
-from redis.asyncio import Redis
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.exceptions import (
@@ -28,6 +28,10 @@ from app.domain.models.user import User
 from app.domain.schemas.auth import LoginRequest, LoginResponse, TokenResponse
 from app.domain.schemas.user import UserCreate, UserResponse
 from app.infrastructure.repositories.user_repository import UserRepository
+
+if TYPE_CHECKING:
+    from redis.asyncio import Redis
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 _REFRESH_BLACKLIST_PREFIX = "blacklist:refresh:"
 _REFRESH_TTL = settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS * 86_400

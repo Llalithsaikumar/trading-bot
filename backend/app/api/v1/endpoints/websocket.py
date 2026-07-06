@@ -2,12 +2,12 @@
 WebSocket endpoints.
 Each endpoint corresponds to a real-time data stream.
 """
+
 from __future__ import annotations
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.core.constants import (
-    WS_CHANNEL_ORDERBOOK,
     WS_CHANNEL_PORTFOLIO,
     WS_CHANNEL_SIGNALS,
     WS_CHANNEL_TICKER,
@@ -31,7 +31,7 @@ async def ticker_stream(
     try:
         while True:
             # Keep the connection alive; data is pushed via ws_manager.broadcast_channel()
-            data = await websocket.receive_text()
+            await websocket.receive_text()
             # handle ping/pong or subscription changes
     except WebSocketDisconnect:
         ws_manager.disconnect(websocket, user_id)

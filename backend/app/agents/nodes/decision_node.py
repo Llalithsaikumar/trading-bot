@@ -5,17 +5,19 @@ Builds a rich multi-section prompt from the full TradingState,
 calls the configured LLM (Claude via LangChain), and parses the
 structured JSON response into typed state fields.
 """
+
 from __future__ import annotations
 
 import json
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from app.agents.graph.state import TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.decision_agent import IDecisionAgent
 from app.agents.prompts.templates import DECISION_SYSTEM_PROMPT, DECISION_USER_TEMPLATE
 from app.domain.enums.trading import TradingSignal
+
+if TYPE_CHECKING:
+    from app.agents.graph.state import TradingState
 
 
 class DecisionAgent(BaseAgent):
@@ -114,8 +116,16 @@ class DecisionAgent(BaseAgent):
             confidence = float(data.get("confidence", 0.0))
             reasoning = data.get("reasoning", "")
             entry = Decimal(str(data["suggested_entry"])) if data.get("suggested_entry") else None
-            sl = Decimal(str(data["suggested_stop_loss"])) if data.get("suggested_stop_loss") else None
-            tp = Decimal(str(data["suggested_take_profit"])) if data.get("suggested_take_profit") else None
+            sl = (
+                Decimal(str(data["suggested_stop_loss"]))
+                if data.get("suggested_stop_loss")
+                else None
+            )
+            tp = (
+                Decimal(str(data["suggested_take_profit"]))
+                if data.get("suggested_take_profit")
+                else None
+            )
             return signal, confidence, reasoning, entry, sl, tp
         except (json.JSONDecodeError, ValueError, KeyError) as exc:
             self._log_warning("failed to parse LLM response", error=str(exc))
@@ -145,7 +155,6 @@ class DecisionAgent(BaseAgent):
             content = str(content)
         return await self.parse_llm_response(content)
 
-
     @staticmethod
     def _format_ohlcv(candles: list[dict[str, Any]]) -> str:
         if not candles:
@@ -153,9 +162,9 @@ class DecisionAgent(BaseAgent):
         header = "| timestamp | open | high | low | close | volume |"
         sep = "|" + "|".join(["---"] * 6) + "|"
         rows = [
-            f"| {c.get('timestamp','')} | {c.get('open','')} | "
-            f"{c.get('high','')} | {c.get('low','')} | "
-            f"{c.get('close','')} | {c.get('volume','')} |"
+            f"| {c.get('timestamp', '')} | {c.get('open', '')} | "
+            f"{c.get('high', '')} | {c.get('low', '')} | "
+            f"{c.get('close', '')} | {c.get('volume', '')} |"
             for c in candles
         ]
         return "\n".join([header, sep, *rows])
@@ -178,7 +187,7 @@ class DecisionAgent(BaseAgent):
             return "  No open positions"
         return "\n".join(
             f"  • {p.get('symbol')} {p.get('side')} qty={p.get('quantity')} "
-            f"entry={p.get('entry_price')} pnl={p.get('unrealized_pnl','N/A')}"
+            f"entry={p.get('entry_price')} pnl={p.get('unrealized_pnl', 'N/A')}"
             for p in positions
         )
 
@@ -189,7 +198,7 @@ class DecisionAgent(BaseAgent):
             lines.append("Recent Signals:")
             for sig in ctx.past_signals[-3:]:
                 lines.append(
-                    f"  • {sig.get('timestamp','?')}: {sig.get('signal','?')} (confidence={sig.get('confidence','?')})"
+                    f"  • {sig.get('timestamp', '?')}: {sig.get('signal', '?')} (confidence={sig.get('confidence', '?')})"
                 )
 
         long_term = [ref for ref in ctx.past_reflections if ref.get("type") == "long_term"]
@@ -209,4 +218,3 @@ class DecisionAgent(BaseAgent):
         if not lines:
             return "No historical context available"
         return "\n".join(lines)
-

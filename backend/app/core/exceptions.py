@@ -2,6 +2,7 @@
 Domain-level exception hierarchy.
 HTTP mapping is handled in app/api/middleware/exception_handler.py.
 """
+
 from __future__ import annotations
 
 

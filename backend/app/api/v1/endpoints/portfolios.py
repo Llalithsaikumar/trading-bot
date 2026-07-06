@@ -1,15 +1,20 @@
 """Portfolio CRUD endpoints."""
+
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import Pagination, get_current_active_user, get_db
 from app.domain.schemas.common import PaginatedResponse
 from app.domain.schemas.trading import PortfolioCreate, PortfolioResponse
 from app.services.portfolio.portfolio_service import PortfolioService
+
+if TYPE_CHECKING:
+    import uuid
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

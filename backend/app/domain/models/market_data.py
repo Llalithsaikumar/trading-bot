@@ -1,4 +1,5 @@
 """Market data ORM models (OHLCV + ticker snapshots)."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -12,6 +13,7 @@ from app.domain.models.base import Base, UUIDMixin
 
 class OHLCV(UUIDMixin, Base):
     """OHLCV candlestick data — partitioned by symbol + timeframe in production."""
+
     __tablename__ = "ohlcv"
     __table_args__ = (
         UniqueConstraint("exchange", "symbol", "timeframe", "timestamp", name="uq_ohlcv"),
@@ -34,10 +36,9 @@ class OHLCV(UUIDMixin, Base):
 
 class MarketTicker(UUIDMixin, Base):
     """Real-time ticker snapshot (latest price, 24h stats)."""
+
     __tablename__ = "market_tickers"
-    __table_args__ = (
-        UniqueConstraint("exchange", "symbol", name="uq_ticker"),
-    )
+    __table_args__ = (UniqueConstraint("exchange", "symbol", name="uq_ticker"),)
 
     exchange: Mapped[str] = mapped_column(String(50), nullable=False)
     symbol: Mapped[str] = mapped_column(String(20), nullable=False, index=True)

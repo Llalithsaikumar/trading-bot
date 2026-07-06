@@ -5,14 +5,16 @@ Only runs when state.risk_approved=True (conditional edge from RiskAgent).
 No trading logic is implemented in this phase — stubs are in place for
 the full order-placement implementation.
 """
+
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from app.agents.graph.state import TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.execution_agent import IExecutionAgent
 from app.domain.enums.trading import TradingSignal
+
+if TYPE_CHECKING:
+    from app.agents.graph.state import TradingState
 
 
 class ExecutionAgent(BaseAgent):

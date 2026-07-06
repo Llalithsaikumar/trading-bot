@@ -2,10 +2,10 @@
 Celery application factory.
 Queues: default, trading, market_data, notifications
 """
+
 from __future__ import annotations
 
 from celery import Celery
-from celery.schedules import crontab
 
 from app.core.config import settings
 
@@ -33,8 +33,8 @@ celery_app.conf.update(
     timezone="UTC",
     enable_utc=True,
     task_track_started=True,
-    task_acks_late=True,          # only ack after successful completion
-    worker_prefetch_multiplier=1, # fair scheduling
+    task_acks_late=True,  # only ack after successful completion
+    worker_prefetch_multiplier=1,  # fair scheduling
     task_routes={
         "app.workers.tasks.trading_tasks.*": {"queue": "trading"},
         "app.workers.tasks.market_data_tasks.*": {"queue": "market_data"},

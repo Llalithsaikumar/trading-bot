@@ -1,10 +1,13 @@
 """IPortfolioAgent — contract for loading portfolio state and metrics."""
+
 from __future__ import annotations
 
-from decimal import Decimal
-from typing import Any, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
-from app.agents.graph.state import PortfolioMetrics
+if TYPE_CHECKING:
+    from decimal import Decimal
+
+    from app.agents.graph.state import PortfolioMetrics
 
 
 @runtime_checkable

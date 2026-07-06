@@ -2,6 +2,7 @@
 System and user prompts for the trading LLM decision node.
 Keep prompts here so they can be versioned and A/B tested.
 """
+
 from __future__ import annotations
 
 TRADING_SYSTEM_PROMPT = """

@@ -1,13 +1,18 @@
 """Authentication endpoints: register, login, refresh, logout."""
+
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import get_db, get_redis
 from app.domain.schemas.auth import LoginRequest, LoginResponse, RefreshRequest, TokenResponse
 from app.domain.schemas.user import UserCreate, UserResponse
 from app.services.auth.auth_service import AuthService
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

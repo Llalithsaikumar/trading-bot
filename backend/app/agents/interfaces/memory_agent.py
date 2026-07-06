@@ -1,9 +1,11 @@
 """IMemoryAgent — contract for loading and persisting agent memory."""
+
 from __future__ import annotations
 
-from typing import Any, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
-from app.agents.graph.state import MemoryContext, ReflectionResult
+if TYPE_CHECKING:
+    from app.agents.graph.state import MemoryContext, ReflectionResult
 
 
 @runtime_checkable

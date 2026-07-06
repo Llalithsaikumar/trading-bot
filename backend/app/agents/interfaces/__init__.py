@@ -1,4 +1,5 @@
 """Agent interface protocols and base classes."""
+
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
 from app.agents.interfaces.decision_agent import IDecisionAgent
 from app.agents.interfaces.execution_agent import IExecutionAgent
@@ -13,13 +14,13 @@ from app.agents.interfaces.technical_agent import ITechnicalAgent
 __all__ = [
     "AgentDependencies",
     "BaseAgent",
-    "IMarketAgent",
-    "INewsAgent",
-    "ITechnicalAgent",
-    "IRiskAgent",
-    "IPortfolioAgent",
     "IDecisionAgent",
     "IExecutionAgent",
+    "IMarketAgent",
     "IMemoryAgent",
+    "INewsAgent",
+    "IPortfolioAgent",
     "IReflectionAgent",
+    "IRiskAgent",
+    "ITechnicalAgent",
 ]

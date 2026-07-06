@@ -1,4 +1,5 @@
 """Price / event alerts."""
+
 from __future__ import annotations
 
 import uuid
@@ -18,7 +19,9 @@ class Alert(UUIDMixin, TimestampMixin, Base):
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     symbol: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
-    alert_type: Mapped[str] = mapped_column(String(30), nullable=False)  # price_above, price_below, etc.
+    alert_type: Mapped[str] = mapped_column(
+        String(30), nullable=False
+    )  # price_above, price_below, etc.
     condition_value: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
     message: Mapped[str | None] = mapped_column(Text)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)

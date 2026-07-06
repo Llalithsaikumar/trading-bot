@@ -5,6 +5,7 @@ Celery tasks for paper trading background operations.
   sync_position_prices — refresh position prices every ~30 s for live PnL dashboard
   reset_daily_pnl      — zero out daily_pnl on all portfolios at UTC midnight
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -23,7 +24,6 @@ def _run(coro):
 
 
 async def _sync_limit_orders_async() -> dict:
-    from decimal import Decimal
 
     from sqlalchemy import select
 
@@ -74,7 +74,9 @@ async def _sync_position_prices_async() -> dict:
                 updated += 1
             except Exception as exc:
                 await session.rollback()
-                logger.warning("Position sync failed", portfolio_id=str(portfolio.id), error=str(exc))
+                logger.warning(
+                    "Position sync failed", portfolio_id=str(portfolio.id), error=str(exc)
+                )
     return {"updated": updated}
 
 
@@ -100,6 +102,7 @@ async def _reset_daily_pnl_async() -> dict:
 # ---------------------------------------------------------------------------
 # Public Celery tasks
 # ---------------------------------------------------------------------------
+
 
 @shared_task(
     bind=True,
@@ -164,6 +167,7 @@ async def _run_strategy_task_async(strategy_id: str) -> dict:
     import uuid
     from datetime import UTC, datetime
     from decimal import Decimal
+
     from langchain_anthropic import ChatAnthropic
     from langchain_openai import ChatOpenAI
 
@@ -302,14 +306,15 @@ def run_strategy_task(self, strategy_id: str) -> dict:
 async def _reflect_on_completed_trade_async(order_id: str, realized_pnl: float) -> dict:
     import uuid
     from decimal import Decimal
+
     from langchain_anthropic import ChatAnthropic
     from langchain_openai import ChatOpenAI
 
-    from app.infrastructure.database.session import AsyncSessionLocal
-    from app.infrastructure.cache.redis_client import get_redis_client
     from app.agents.interfaces.base import AgentDependencies
     from app.agents.nodes.trade_reflection_node import TradeReflectionAgent
     from app.core.config import settings
+    from app.infrastructure.cache.redis_client import get_redis_client
+    from app.infrastructure.database.session import AsyncSessionLocal
 
     async with AsyncSessionLocal() as session:
         redis = await get_redis_client()
@@ -350,5 +355,3 @@ def reflect_on_completed_trade(self, order_id: str, realized_pnl: float) -> dict
     except Exception as exc:
         logger.error("reflect_on_completed_trade failed", error=str(exc))
         raise self.retry(exc=exc)
-
-

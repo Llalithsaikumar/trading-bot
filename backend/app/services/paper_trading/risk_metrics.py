@@ -3,6 +3,7 @@ Risk metric computation for paper trading portfolios.
 
 All inputs and outputs use Python Decimal for precision.
 """
+
 from __future__ import annotations
 
 import math
@@ -21,23 +22,23 @@ class RiskMetrics:
     total_trades: int
     winning_trades: int
     losing_trades: int
-    win_rate: Decimal                # 0–1
-    profit_factor: Decimal           # gross_profit / gross_loss
-    avg_win: Decimal                 # average winning trade PnL in USDT
-    avg_loss: Decimal                # average losing trade PnL in USDT (positive)
+    win_rate: Decimal  # 0–1
+    profit_factor: Decimal  # gross_profit / gross_loss
+    avg_win: Decimal  # average winning trade PnL in USDT
+    avg_loss: Decimal  # average losing trade PnL in USDT (positive)
     # Drawdown
-    max_drawdown: Decimal            # in USDT
-    max_drawdown_pct: Decimal        # 0–1
+    max_drawdown: Decimal  # in USDT
+    max_drawdown_pct: Decimal  # 0–1
     # Return
-    total_return: Decimal            # in USDT
-    total_return_pct: Decimal        # 0–1
+    total_return: Decimal  # in USDT
+    total_return_pct: Decimal  # 0–1
     # Risk-adjusted returns
     sharpe_ratio: Decimal | None
     sortino_ratio: Decimal | None
     calmar_ratio: Decimal | None
     # Other
     total_fees_paid: Decimal
-    var_95: Decimal                  # 95 % VaR in USDT (daily)
+    var_95: Decimal  # 95 % VaR in USDT (daily)
     peak_equity: Decimal
     current_equity: Decimal
 

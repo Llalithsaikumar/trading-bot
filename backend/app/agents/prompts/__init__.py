@@ -1,4 +1,5 @@
 """LLM prompt templates for all agent nodes that use language models."""
+
 from app.agents.prompts.templates import (
     DECISION_SYSTEM_PROMPT,
     DECISION_USER_TEMPLATE,

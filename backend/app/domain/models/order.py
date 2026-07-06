@@ -1,4 +1,5 @@
 """Order ORM model."""
+
 from __future__ import annotations
 
 import uuid
@@ -39,7 +40,7 @@ class Order(UUIDMixin, TimestampMixin, Base):
     )
 
     quantity: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
-    price: Mapped[Decimal | None] = mapped_column(Numeric(20, 8))        # None for market orders
+    price: Mapped[Decimal | None] = mapped_column(Numeric(20, 8))  # None for market orders
     filled_quantity: Mapped[Decimal] = mapped_column(Numeric(20, 8), default=Decimal("0"))
     average_fill_price: Mapped[Decimal | None] = mapped_column(Numeric(20, 8))
     fee: Mapped[Decimal] = mapped_column(Numeric(20, 8), default=Decimal("0"))

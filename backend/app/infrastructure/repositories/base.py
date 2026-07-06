@@ -2,20 +2,24 @@
 Generic async repository.
 Concrete repositories extend this class and call super() methods.
 """
+
 from __future__ import annotations
 
-import uuid
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from sqlalchemy import delete, func, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.models.base import Base
+
+if TYPE_CHECKING:
+    import uuid
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 ModelT = TypeVar("ModelT", bound=Base)
 
 
-class BaseRepository(Generic[ModelT]):
+class BaseRepository[ModelT: Base]:
     """
     CRUD base repository using SQLAlchemy async sessions.
     Extend and override methods as needed.
@@ -51,9 +55,7 @@ class BaseRepository(Generic[ModelT]):
         await self._session.refresh(obj)
         return obj
 
-    async def update(
-        self, entity_id: uuid.UUID, data: dict[str, Any]
-    ) -> ModelT | None:
+    async def update(self, entity_id: uuid.UUID, data: dict[str, Any]) -> ModelT | None:
         stmt = (
             update(self.model)
             .where(self.model.id == entity_id)  # type: ignore[attr-defined]

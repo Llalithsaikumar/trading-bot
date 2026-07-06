@@ -4,13 +4,13 @@ Memory Agent node — loads historical context at graph start.
 Reads past signals, reflections, and market patterns from Redis / DB
 to provide the Decision Agent with relevant historical context.
 """
+
 from __future__ import annotations
 
 from typing import Any
 
 from app.agents.graph.state import MemoryContext, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.memory_agent import IMemoryAgent
 
 
 class MemoryAgent(BaseAgent):
@@ -252,8 +252,6 @@ class MemoryAgent(BaseAgent):
                 self._log_info("long-term memory saved successfully", run_id=run_id)
             except Exception as e:
                 self._log_warning("failed to save long-term memory to DB", error=str(e))
-
-
 
     async def build_context_key(
         self,

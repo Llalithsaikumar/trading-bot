@@ -1,13 +1,17 @@
 """Order-specific repository queries."""
+
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
 from app.domain.enums.trading import OrderStatus
 from app.domain.models.order import Order
 from app.infrastructure.repositories.base import BaseRepository
+
+if TYPE_CHECKING:
+    import uuid
 
 
 class OrderRepository(BaseRepository[Order]):
@@ -36,9 +40,7 @@ class OrderRepository(BaseRepository[Order]):
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_by_exchange_id(
-        self, exchange_order_id: str, exchange: str
-    ) -> Order | None:
+    async def get_by_exchange_id(self, exchange_order_id: str, exchange: str) -> Order | None:
         stmt = select(Order).where(
             Order.exchange_order_id == exchange_order_id,
             Order.exchange == exchange,

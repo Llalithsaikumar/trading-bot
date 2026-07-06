@@ -1,12 +1,13 @@
 """User management endpoints (authenticated)."""
+
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import (
     Pagination,
-    PaginationParams,
     get_current_active_user,
     get_current_admin_user,
     get_db,
@@ -14,6 +15,9 @@ from app.core.dependencies import (
 from app.domain.schemas.common import PaginatedResponse
 from app.domain.schemas.user import PasswordChange, UserListItem, UserResponse, UserUpdate
 from app.services.users.user_service import UserService
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

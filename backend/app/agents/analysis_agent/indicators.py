@@ -2,6 +2,7 @@
 Technical indicator computation helpers.
 Uses pandas + ta-lib (or pandas-ta as fallback).
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -24,6 +25,7 @@ def ohlcv_to_dataframe(candles: list[list[Any]]) -> pd.DataFrame:
 
 try:
     import talib
+
     HAS_TALIB = True
 except ImportError:
     HAS_TALIB = False
@@ -34,7 +36,7 @@ def compute_rsi(df: pd.DataFrame, period: int = 14) -> pd.Series:
     if HAS_TALIB:
         values = talib.RSI(df["close"].values, timeperiod=period)
         return pd.Series(values, index=df.index)
-    
+
     delta = df["close"].diff()
     gain = (delta.where(delta > 0, 0)).copy()
     loss = (-delta.where(delta < 0, 0)).copy()
@@ -45,9 +47,7 @@ def compute_rsi(df: pd.DataFrame, period: int = 14) -> pd.Series:
     return rsi
 
 
-def compute_macd(
-    df: pd.DataFrame, fast: int = 12, slow: int = 26, signal: int = 9
-) -> pd.DataFrame:
+def compute_macd(df: pd.DataFrame, fast: int = 12, slow: int = 26, signal: int = 9) -> pd.DataFrame:
     """MACD line, signal line, and histogram."""
     if HAS_TALIB:
         macd_line, signal_line, histogram = talib.MACD(
@@ -153,13 +153,16 @@ def compute_all_indicators(df: pd.DataFrame) -> dict[str, Any]:
         "macd_histogram": float(macd_df["macd_histogram"].iloc[-1])
         if not pd.isna(macd_df["macd_histogram"].iloc[-1])
         else 0.0,
-        "bb_upper": float(bb_df["bb_upper"].iloc[-1]) if not pd.isna(bb_df["bb_upper"].iloc[-1]) else 0.0,
+        "bb_upper": float(bb_df["bb_upper"].iloc[-1])
+        if not pd.isna(bb_df["bb_upper"].iloc[-1])
+        else 0.0,
         "bb_middle": float(bb_df["bb_middle"].iloc[-1])
         if not pd.isna(bb_df["bb_middle"].iloc[-1])
         else 0.0,
-        "bb_lower": float(bb_df["bb_lower"].iloc[-1]) if not pd.isna(bb_df["bb_lower"].iloc[-1]) else 0.0,
+        "bb_lower": float(bb_df["bb_lower"].iloc[-1])
+        if not pd.isna(bb_df["bb_lower"].iloc[-1])
+        else 0.0,
         "atr": float(atr.iloc[-1]) if not pd.isna(atr.iloc[-1]) else 0.0,
         "ema_20": float(ema_20.iloc[-1]) if not pd.isna(ema_20.iloc[-1]) else 0.0,
         "ema_50": float(ema_50.iloc[-1]) if not pd.isna(ema_50.iloc[-1]) else 0.0,
     }
-

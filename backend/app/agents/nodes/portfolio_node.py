@@ -4,6 +4,7 @@ Portfolio Agent node — loads portfolio balance, positions, and metrics.
 Queries the database for the active portfolio associated with the strategy,
 and optionally reconciles with the live exchange balance.
 """
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -11,7 +12,6 @@ from typing import Any
 
 from app.agents.graph.state import PortfolioMetrics, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.portfolio_agent import IPortfolioAgent
 
 
 class PortfolioAgent(BaseAgent):
@@ -132,4 +132,3 @@ class PortfolioAgent(BaseAgent):
             winning_trades=winning_trades,
             sharpe_ratio=None,
         )
-

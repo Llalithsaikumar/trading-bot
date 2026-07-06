@@ -1,12 +1,11 @@
 """Background tasks for fetching and storing market data."""
+
 from __future__ import annotations
+
+import asyncio
 
 from celery import shared_task
 from loguru import logger
-
-
-import asyncio
-from datetime import datetime, UTC
 from sqlalchemy import select
 
 from app.domain.enums.trading import StrategyStatus
@@ -104,4 +103,3 @@ def fetch_historical_ohlcv(
     except Exception as exc:
         logger.error("fetch_historical_ohlcv failed", error=str(exc))
         raise self.retry(exc=exc)
-
