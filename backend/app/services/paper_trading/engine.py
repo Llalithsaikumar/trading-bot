@@ -15,16 +15,15 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from loguru import logger
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import ExchangeError, InsufficientBalanceError
 from app.domain.enums.trading import OrderSide, OrderStatus, OrderType, PositionSide
 from app.domain.models.order import Order
 from app.domain.models.portfolio import EquityPoint, Portfolio, Position
-from app.domain.schemas.trading import OrderCreate
 from app.infrastructure.exchange import get_exchange
 from app.infrastructure.repositories.order_repository import OrderRepository
 from app.infrastructure.repositories.portfolio_repository import (
@@ -33,6 +32,11 @@ from app.infrastructure.repositories.portfolio_repository import (
 )
 from app.services.paper_trading.fees import calc_fee
 from app.services.paper_trading.slippage import SlippageCalculator, SlippageModel
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    from app.domain.schemas.trading import OrderCreate
 
 _DUST = Decimal("0.000000001")  # treat quantities below this as zero
 

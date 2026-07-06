@@ -12,7 +12,6 @@ from typing import Any
 
 from app.agents.graph.state import RiskViolation, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.risk_agent import IRiskAgent
 from app.agents.risk_agent.rules import RISK_RULES
 
 
@@ -68,15 +67,32 @@ class RiskAgent(BaseAgent):
     # ── IRiskAgent implementation ─────────────────────────────────────────────
 
     async def evaluate(self, state: TradingState) -> list[RiskViolation]:
+        import inspect
         violations: list[RiskViolation] = []
         for rule_fn in RISK_RULES:
-            passed, note = rule_fn(state)
-            if not passed:
+            try:
+                if inspect.iscoroutinefunction(rule_fn):
+                    passed, note = await rule_fn(state, self._deps.session)
+                else:
+                    passed, note = rule_fn(state, self._deps.session)  # type: ignore
+
+                if not passed:
+                    violations.append(
+                        RiskViolation(
+                            rule=rule_fn.__name__,
+                            message=note or f"Rule '{rule_fn.__name__}' failed",
+                            severity="critical"
+                            if rule_fn.__name__
+                            in ("check_neutral_signal", "check_max_drawdown", "check_consecutive_losses")
+                            else "error",
+                        )
+                    )
+            except Exception as e:
                 violations.append(
                     RiskViolation(
                         rule=rule_fn.__name__,
-                        message=note or f"Rule '{rule_fn.__name__}' failed",
-                        severity="error",
+                        message=f"Rule execution error: {e}",
+                        severity="critical",
                     )
                 )
         return violations

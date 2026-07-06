@@ -1,9 +1,10 @@
 import uuid
+
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+
 from app.agents.graph.builder import TradingGraphBuilder
+from app.agents.graph.state import MarketSentiment, MemoryContext, PortfolioMetrics, TradingState
 from app.agents.interfaces.base import AgentDependencies
-from app.agents.graph.state import TradingState, MemoryContext, MarketSentiment, PortfolioMetrics
 from app.domain.enums.trading import TradingSignal
 
 

@@ -5,17 +5,20 @@ Register these in app/main.py via app.add_exception_handler().
 
 from __future__ import annotations
 
-from fastapi import Request
+from typing import TYPE_CHECKING
+
 from fastapi.responses import JSONResponse
 
-from app.core.exceptions import (
-    AppError,
-    AuthenticationError,
-    AuthorizationError,
-    InsufficientBalanceError,
-    NotFoundError,
-    RiskLimitExceededError,
-)
+if TYPE_CHECKING:
+    from fastapi import Request
+
+    from app.core.exceptions import (
+        AppError,
+        AuthenticationError,
+        AuthorizationError,
+        NotFoundError,
+        RiskLimitExceededError,
+    )
 
 
 async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:

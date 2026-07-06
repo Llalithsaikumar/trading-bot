@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import hashlib
 from typing import Any
-from loguru import logger
+
 from langchain_openai import OpenAIEmbeddings
+from loguru import logger
 
 from app.core.config import settings
 

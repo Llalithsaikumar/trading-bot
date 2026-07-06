@@ -9,13 +9,13 @@ update dict that LangGraph merges back.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
 from decimal import Decimal
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from langgraph.graph import add_messages
 from pydantic import BaseModel, Field
 
+from datetime import datetime
 from app.domain.enums.trading import TradingSignal
 
 
@@ -64,10 +64,16 @@ class PortfolioMetrics(BaseModel):
     daily_pnl_pct: float = 0.0
     unrealized_pnl: Decimal = Decimal("0")
     realized_pnl: Decimal = Decimal("0")
+    total_pnl: Decimal = Decimal("0")
+    exposure: Decimal = Decimal("0")
+    available_margin: Decimal = Decimal("0")
+    open_orders: list[dict[str, Any]] = Field(default_factory=list)
+    summary: str = ""
     win_rate: float = 0.0
     total_trades: int = 0
     winning_trades: int = 0
     sharpe_ratio: float | None = None
+
 
 
 class RiskViolation(BaseModel):
@@ -144,6 +150,8 @@ class TradingState(BaseModel):
     suggested_entry: Decimal | None = None
     suggested_stop_loss: Decimal | None = None
     suggested_take_profit: Decimal | None = None
+    suggested_size: Decimal | None = None
+
 
     # ── Risk Agent output ─────────────────────────────────────────────────────
     risk_approved: bool = False

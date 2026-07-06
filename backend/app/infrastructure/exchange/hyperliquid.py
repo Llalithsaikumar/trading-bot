@@ -42,7 +42,7 @@ class HyperliquidExchange(CCXTExchangeBase):
         )
 
     @classmethod
-    def from_settings(cls) -> "HyperliquidExchange":
+    def from_settings(cls) -> HyperliquidExchange:
         """Construct from application settings."""
         return cls(
             wallet_address=settings.HYPERLIQUID_WALLET_ADDRESS,

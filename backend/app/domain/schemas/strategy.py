@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-import uuid
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import Field
 
 from app.domain.enums.trading import StrategyStatus, TimeFrame
 from app.domain.schemas.common import BaseSchema, TimestampSchema
+
+import uuid
 
 
 class StrategyCreate(BaseSchema):

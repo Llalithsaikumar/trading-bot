@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING
 
 from app.domain.schemas.common import BaseSchema
+
+from decimal import Decimal
 
 
 class OHLCVResponse(BaseSchema):
@@ -48,3 +49,21 @@ class MarketSummaryResponse(BaseSchema):
     volume_24h: Decimal
     high_24h: Decimal | None = None
     low_24h: Decimal | None = None
+
+
+class Analysis(BaseSchema):
+    """Structured technical analysis containing standard indicators."""
+
+    rsi: Decimal
+    ema_20: Decimal
+    ema_50: Decimal
+    macd: Decimal
+    macd_signal: Decimal
+    macd_histogram: Decimal
+    atr: Decimal
+    bb_upper: Decimal
+    bb_middle: Decimal
+    bb_lower: Decimal
+    vwap: Decimal | None = None
+    adx: Decimal | None = None
+

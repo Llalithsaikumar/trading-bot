@@ -3,16 +3,19 @@
 from __future__ import annotations
 
 import json
-from decimal import Decimal
-from typing import Any
-import uuid
+from typing import TYPE_CHECKING, Any
+
 from loguru import logger
 
-from app.agents.interfaces.base import AgentDependencies
-from app.domain.models.order import Order
-from app.domain.models.strategy import Strategy, StrategyExecution
 from app.domain.models.memory import LongTermMemory
-from app.infrastructure.repositories.memory_repository import MemoryRepository
+from app.domain.models.order import Order
+from app.domain.models.strategy import StrategyExecution
+
+if TYPE_CHECKING:
+    import uuid
+    from decimal import Decimal
+
+    from app.agents.interfaces.base import AgentDependencies
 
 TRADE_REFLECTION_SYSTEM_PROMPT = """
 You are a senior trading supervisor and quantitative analyst.
@@ -148,7 +151,33 @@ class TradeReflectionAgent:
         else:
             analysis_dict = self._stub_reflection(realized_pnl)
 
-        # 3. Store lessons in long-term memory
+        # 3. Update strategy confidence in strategy.config
+        current_conf = 0.5
+        try:
+            from app.domain.models.strategy import Strategy
+
+            strategy = await self._deps.session.get(Strategy, order.strategy_id)
+            if strategy:
+                config = dict(strategy.config) if strategy.config else {}
+                current_conf = config.get("confidence", 0.5)
+
+                adjustment = analysis_dict.get("confidence_adjustment", "no_change")
+                if adjustment == "increase":
+                    current_conf = min(1.0, current_conf + 0.05)
+                elif adjustment == "decrease":
+                    current_conf = max(0.0, current_conf - 0.05)
+
+                config["confidence"] = current_conf
+                strategy.config = config
+                self._deps.session.add(strategy)
+                await self._deps.session.flush()
+                logger.info(
+                    f"Updated strategy {order.strategy_id} confidence to {current_conf:.2f} ({adjustment})"
+                )
+        except Exception as e:
+            logger.error(f"Failed to update strategy confidence: {e}")
+
+        # 4. Store lessons in long-term memory
         try:
             from app.infrastructure.repositories.memory_repository import MemoryRepository
             from app.services.embedding.embedding_service import EmbeddingService
@@ -170,7 +199,7 @@ class TradeReflectionAgent:
                 run_id=run_id,
                 symbol=order.symbol,
                 signal=signal,
-                confidence=float(order.quantity),  # mock placeholder
+                confidence=float(current_conf),  # Running updated confidence
                 reasoning=reasoning,
                 news_summary=news_summary,
                 indicators_summary=indicators_summary,

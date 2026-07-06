@@ -5,14 +5,16 @@ PortfolioService — CRUD for user portfolios.
 from __future__ import annotations
 
 import uuid
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import TYPE_CHECKING
 
 from app.core.exceptions import AuthorizationError, NotFoundError
 from app.domain.models.portfolio import Portfolio
 from app.domain.schemas.common import PaginatedResponse
 from app.domain.schemas.trading import PortfolioCreate, PortfolioResponse
 from app.infrastructure.repositories.portfolio_repository import PortfolioRepository
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class PortfolioService:

@@ -5,7 +5,7 @@ Provides get_db() dependency for FastAPI route handlers.
 
 from __future__ import annotations
 
-from typing import AsyncGenerator
+from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -15,6 +15,9 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.config import settings
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
 
 # ---------------------------------------------------------------------------
 # Engine
@@ -47,7 +50,7 @@ AsyncSessionFactory = async_sessionmaker(
 AsyncSessionLocal = AsyncSessionFactory
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_db() -> AsyncGenerator[AsyncSession]:
     """FastAPI dependency: yield an async DB session."""
     async with AsyncSessionFactory() as session:
         try:

@@ -5,18 +5,21 @@ Concrete repositories extend this class and call super() methods.
 
 from __future__ import annotations
 
-import uuid
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from sqlalchemy import delete, func, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.models.base import Base
+
+if TYPE_CHECKING:
+    import uuid
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 ModelT = TypeVar("ModelT", bound=Base)
 
 
-class BaseRepository(Generic[ModelT]):
+class BaseRepository[ModelT: Base]:
     """
     CRUD base repository using SQLAlchemy async sessions.
     Extend and override methods as needed.

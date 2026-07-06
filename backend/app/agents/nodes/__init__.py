@@ -11,13 +11,13 @@ from app.agents.nodes.risk_node import RiskAgent
 from app.agents.nodes.technical_node import TechnicalAgent
 
 __all__ = [
-    "MarketAgent",
-    "NewsAgent",
-    "TechnicalAgent",
-    "RiskAgent",
-    "PortfolioAgent",
     "DecisionAgent",
     "ExecutionAgent",
+    "MarketAgent",
     "MemoryAgent",
+    "NewsAgent",
+    "PortfolioAgent",
     "ReflectionAgent",
+    "RiskAgent",
+    "TechnicalAgent",
 ]

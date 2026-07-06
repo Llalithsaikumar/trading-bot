@@ -48,7 +48,7 @@ class OKXExchange(CCXTExchangeBase):
         self._ccxt = ccxt.okx(config)
 
     @classmethod
-    def from_settings(cls, market_type: MarketType = "swap") -> "OKXExchange":
+    def from_settings(cls, market_type: MarketType = "swap") -> OKXExchange:
         """Construct from application settings."""
         return cls(
             api_key=settings.OKX_API_KEY,

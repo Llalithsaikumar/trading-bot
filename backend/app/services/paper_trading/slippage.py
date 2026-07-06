@@ -51,10 +51,7 @@ class SlippageCalculator:
 
         slippage_pct = effective_bps / Decimal("10000")
 
-        if side == "buy":
-            fill = mid_price * (1 + slippage_pct)
-        else:
-            fill = mid_price * (1 - slippage_pct)
+        fill = mid_price * (1 + slippage_pct) if side == "buy" else mid_price * (1 - slippage_pct)
 
         fill = fill.quantize(Decimal("0.00000001"))
         cost = (abs(fill - mid_price) * quantity).quantize(Decimal("0.00000001"))

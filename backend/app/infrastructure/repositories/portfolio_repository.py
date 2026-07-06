@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
-import uuid
-from datetime import datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from app.domain.models.portfolio import EquityPoint, Portfolio, Position
+from app.domain.models.portfolio import EquityPoint, Portfolio
 from app.infrastructure.repositories.base import BaseRepository
+
+if TYPE_CHECKING:
+    import uuid
+    from datetime import datetime
 
 
 class PortfolioRepository(BaseRepository[Portfolio]):

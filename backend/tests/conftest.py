@@ -6,7 +6,8 @@ Provides an async test client, test DB session, and factories.
 from __future__ import annotations
 
 import asyncio
-from typing import AsyncGenerator
+from typing import TYPE_CHECKING
+from typing import Any
 
 import pytest
 import pytest_asyncio
@@ -15,6 +16,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.domain.models.base import Base
 from app.main import create_app
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
 
 # In-memory SQLite for unit tests (override with real PG in integration tests)
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -28,7 +32,7 @@ def event_loop():
 
 
 @pytest_asyncio.fixture(scope="function")
-async def db_session() -> AsyncGenerator[AsyncSession, None]:
+async def db_session() -> AsyncGenerator[AsyncSession]:
     engine = create_async_engine(TEST_DATABASE_URL, echo=False)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -42,37 +46,52 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
     await engine.dispose()
 
 
-@pytest_asyncio.fixture(scope="function")
-async def client(db_session) -> AsyncGenerator[AsyncClient, None]:
-    from app.core.dependencies import get_db, get_redis
+class MockRedis:
+    def __init__(self) -> None:
+        self.store: dict = {}
 
-    class MockRedis:
-        def __init__(self) -> None:
-            self.store: dict = {}
+    async def get(self, key: str) -> Any:
+        return self.store.get(key)
 
-        async def get(self, key: str) -> Any:
-            return self.store.get(key)
+    async def set(self, key: str, value: Any, ex: Any = None) -> None:
+        self.store[key] = value
 
-        async def set(self, key: str, value: Any, ex: Any = None) -> None:
-            self.store[key] = value
+    async def setex(self, key: str, ttl: int, value: Any) -> None:
+        self.store[key] = value
 
-        async def delete(self, key: str) -> None:
+    async def delete(self, *keys: str) -> None:
+        for key in keys:
             self.store.pop(key, None)
 
-        async def ping(self) -> bool:
-            return True
+    async def ping(self) -> bool:
+        return True
 
-        async def lrange(self, key: str, start: int, stop: int) -> list:
-            return []
+    async def lrange(self, key: str, start: int, stop: int) -> list:
+        return []
 
-        async def lpush(self, key: str, *values: Any) -> int:
-            return len(values)
+    async def lpush(self, key: str, *values: Any) -> int:
+        return len(values)
 
-        async def ltrim(self, key: str, start: int, stop: int) -> None:
-            pass
+    async def ltrim(self, key: str, start: int, stop: int) -> None:
+        pass
 
-        async def expire(self, key: str, time: int) -> None:
-            pass
+    async def expire(self, key: str, time: int) -> None:
+        pass
+
+    async def keys(self, pattern: str) -> list[str]:
+        return list(self.store.keys())
+
+
+@pytest.fixture(autouse=True)
+def mock_redis_client(mocker):
+    mock_instance = MockRedis()
+    mocker.patch("app.infrastructure.cache.redis_client.get_redis_client", return_value=mock_instance)
+    return mock_instance
+
+
+@pytest_asyncio.fixture(scope="function")
+async def client(db_session) -> AsyncGenerator[AsyncClient]:
+    from app.core.dependencies import get_db, get_redis
 
     app = create_app()
     app.dependency_overrides[get_db] = lambda: db_session
@@ -84,3 +103,4 @@ async def client(db_session) -> AsyncGenerator[AsyncClient, None]:
         yield ac
 
     app.dependency_overrides.clear()
+

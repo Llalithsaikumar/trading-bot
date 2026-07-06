@@ -5,12 +5,13 @@ Tracks active connections per user/channel and broadcasts messages.
 
 from __future__ import annotations
 
-import asyncio
 from collections import defaultdict
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from fastapi import WebSocket
 from loguru import logger
+
+if TYPE_CHECKING:
+    from fastapi import WebSocket
 
 
 class ConnectionManager:

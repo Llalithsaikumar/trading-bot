@@ -1,4 +1,5 @@
 from unittest.mock import AsyncMock
+
 import ccxt.async_support as ccxt
 import pytest
 

@@ -9,15 +9,19 @@ Usage:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from app.core.config import settings
 from app.core.exceptions import ExchangeError
 from app.core.logging import logger
 
-from .base import ExchangeBase
 from .binance import BinanceExchange
 from .bybit import BybitExchange
 from .hyperliquid import HyperliquidExchange
 from .okx import OKXExchange
+
+if TYPE_CHECKING:
+    from .base import ExchangeBase
 
 _SUPPORTED: frozenset[str] = frozenset({"binance", "bybit", "okx", "hyperliquid"})
 _pool: dict[str, ExchangeBase] = {}

@@ -12,7 +12,6 @@ from typing import Any
 
 from app.agents.graph.state import MarketSentiment, NewsItem, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.news_agent import INewsAgent
 
 
 class NewsAgent(BaseAgent):

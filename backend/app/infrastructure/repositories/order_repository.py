@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
 from app.domain.enums.trading import OrderStatus
 from app.domain.models.order import Order
 from app.infrastructure.repositories.base import BaseRepository
+
+if TYPE_CHECKING:
+    import uuid
 
 
 class OrderRepository(BaseRepository[Order]):

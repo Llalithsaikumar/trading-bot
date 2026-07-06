@@ -1,4 +1,5 @@
 import os
+
 import yaml
 
 
@@ -7,7 +8,7 @@ def test_dockerfile_contents():
     dockerfile_path = os.path.join(os.path.dirname(__file__), "..", "..", "Dockerfile")
     assert os.path.exists(dockerfile_path)
 
-    with open(dockerfile_path, "r", encoding="utf-8") as f:
+    with open(dockerfile_path, encoding="utf-8") as f:
         content = f.read()
 
     # Basic validations
@@ -21,7 +22,7 @@ def test_docker_compose_structure():
     compose_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "docker-compose.yml")
     assert os.path.exists(compose_path)
 
-    with open(compose_path, "r", encoding="utf-8") as f:
+    with open(compose_path, encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
     # Basic compose validations

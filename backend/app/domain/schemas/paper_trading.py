@@ -4,12 +4,14 @@ Pydantic schemas for paper trading–specific API operations.
 
 from __future__ import annotations
 
-from datetime import datetime
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from pydantic import Field
 
 from app.domain.schemas.common import BaseSchema
+
+from datetime import datetime
 
 
 class PaperPortfolioCreate(BaseSchema):

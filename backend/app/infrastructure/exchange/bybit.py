@@ -45,7 +45,7 @@ class BybitExchange(CCXTExchangeBase):
         self._ccxt = ccxt.bybit(config)
 
     @classmethod
-    def from_settings(cls, market_type: MarketType = "swap") -> "BybitExchange":
+    def from_settings(cls, market_type: MarketType = "swap") -> BybitExchange:
         """Construct from application settings."""
         return cls(
             api_key=settings.BYBIT_API_KEY,

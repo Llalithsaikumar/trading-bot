@@ -6,17 +6,20 @@ Yields DB sessions, Redis client, current user, pagination params, etc.
 from __future__ import annotations
 
 import uuid
-from typing import Annotated, AsyncGenerator
+from typing import TYPE_CHECKING, Annotated
 
 from fastapi import Depends, HTTPException, Query, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
 from app.core.security import decode_token
 from app.infrastructure.cache.redis_client import get_redis_client
 from app.infrastructure.database.session import AsyncSessionFactory
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 security_scheme = HTTPBearer(auto_error=False)
 
@@ -24,7 +27,7 @@ security_scheme = HTTPBearer(auto_error=False)
 # ---------------------------------------------------------------------------
 # Database session
 # ---------------------------------------------------------------------------
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_db() -> AsyncGenerator[AsyncSession]:
     """Yield an async SQLAlchemy session, rolling back on error."""
     async with AsyncSessionFactory() as session:
         try:
@@ -87,7 +90,7 @@ async def get_current_user(
         )
 
     # Lazy import to avoid circular dependency
-    from app.infrastructure.repositories.user_repository import UserRepository  # noqa: PLC0415
+    from app.infrastructure.repositories.user_repository import UserRepository
 
     repo = UserRepository(session)
     try:
@@ -108,7 +111,7 @@ async def get_current_user(
 
 async def get_current_active_user(current_user=Depends(get_current_user)):
     """Ensure the user account is active (not suspended)."""
-    from app.domain.enums.user import UserStatus  # noqa: PLC0415
+    from app.domain.enums.user import UserStatus
 
     if not current_user.is_active or current_user.status == UserStatus.SUSPENDED:
         raise HTTPException(
@@ -120,7 +123,7 @@ async def get_current_active_user(current_user=Depends(get_current_user)):
 
 async def get_current_admin_user(current_user=Depends(get_current_active_user)):
     """Ensure the authenticated user has admin role."""
-    from app.domain.enums.user import UserRole  # noqa: PLC0415
+    from app.domain.enums.user import UserRole
 
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(

@@ -10,8 +10,6 @@ Create Date: 2026-07-05
 
 from __future__ import annotations
 
-from decimal import Decimal
-
 import sqlalchemy as sa
 from alembic import op
 

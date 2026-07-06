@@ -4,13 +4,10 @@ UserService — profile management and admin user listing.
 
 from __future__ import annotations
 
-import uuid
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import TYPE_CHECKING
 
 from app.core.exceptions import AlreadyExistsError, AuthenticationError, NotFoundError
 from app.core.security import hash_password, verify_password
-from app.domain.models.user import User
 from app.domain.schemas.common import PaginatedResponse
 from app.domain.schemas.user import (
     PasswordChange,
@@ -19,6 +16,13 @@ from app.domain.schemas.user import (
     UserUpdate,
 )
 from app.infrastructure.repositories.user_repository import UserRepository
+
+if TYPE_CHECKING:
+    import uuid
+
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    from app.domain.models.user import User
 
 
 class UserService:

@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-import uuid
-from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from pydantic import Field, model_validator
 
 from app.domain.enums.trading import OrderSide, OrderStatus, OrderType, PositionSide, TimeInForce
 from app.domain.schemas.common import BaseSchema, TimestampSchema
+
+import uuid
+from decimal import Decimal
+
 
 
 # ─── Order ─────────────────────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import uuid
 from decimal import Decimal
+
 import pytest
 
 from app.agents.interfaces.base import AgentDependencies
@@ -97,3 +98,9 @@ async def test_trade_reflection_agent_success(db_session):
     # There should be 2 memories: the initial one and the trade reflection one
     assert len(mems) == 2
     assert mems[0].reflection != ""
+
+    # Check updated strategy confidence
+    await db_session.refresh(strategy)
+    assert strategy.config is not None
+    assert "confidence" in strategy.config
+    assert strategy.config["confidence"] == 0.5  # default stub_reflection returns no_change (0.5 + 0.0)

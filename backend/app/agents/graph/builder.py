@@ -63,7 +63,7 @@ class TradingGraphBuilder:
     def __init__(self, deps: AgentDependencies) -> None:
         self._deps = deps
 
-    def build(self) -> "CompiledStateGraph":
+    def build(self) -> CompiledStateGraph:
         # ── Instantiate all 9 agents with injected dependencies ───────────────
         memory_agent = MemoryAgent(self._deps)
         market_agent = MarketAgent(self._deps)
@@ -122,7 +122,7 @@ class TradingGraphBuilder:
 
 def build_trading_graph(
     deps: AgentDependencies | None = None,
-) -> "CompiledStateGraph":
+) -> CompiledStateGraph:
     """
     Build and compile the trading graph with optional dependency injection.
 

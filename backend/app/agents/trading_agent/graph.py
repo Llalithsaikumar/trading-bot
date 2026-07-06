@@ -15,4 +15,4 @@ from app.agents.graph.state import TradingState
 # Module-level compiled graph — same contract as before
 trading_graph = build_trading_graph()
 
-__all__ = ["trading_graph", "build_trading_graph", "TradingGraphBuilder", "TradingState"]
+__all__ = ["TradingGraphBuilder", "TradingState", "build_trading_graph", "trading_graph"]

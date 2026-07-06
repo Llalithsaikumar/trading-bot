@@ -14,13 +14,13 @@ from app.agents.interfaces.technical_agent import ITechnicalAgent
 __all__ = [
     "AgentDependencies",
     "BaseAgent",
-    "IMarketAgent",
-    "INewsAgent",
-    "ITechnicalAgent",
-    "IRiskAgent",
-    "IPortfolioAgent",
     "IDecisionAgent",
     "IExecutionAgent",
+    "IMarketAgent",
     "IMemoryAgent",
+    "INewsAgent",
+    "IPortfolioAgent",
     "IReflectionAgent",
+    "IRiskAgent",
+    "ITechnicalAgent",
 ]

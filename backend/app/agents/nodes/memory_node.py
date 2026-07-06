@@ -11,7 +11,6 @@ from typing import Any
 
 from app.agents.graph.state import MemoryContext, TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
-from app.agents.interfaces.memory_agent import IMemoryAgent
 
 
 class MemoryAgent(BaseAgent):
