@@ -6,7 +6,7 @@ from decimal import Decimal
 
 from fastapi import APIRouter, Depends, Query
 
-from app.core.dependencies import get_current_active_user
+from app.core.dependencies import get_current_active_user, get_exchange_client
 from app.core.exceptions import ExchangeError
 from app.domain.schemas.market_data import (
     MarketSummaryResponse,
@@ -14,18 +14,18 @@ from app.domain.schemas.market_data import (
     OrderBookResponse,
     TickerResponse,
 )
-from app.infrastructure.exchange import get_exchange
+from app.infrastructure.exchange.base import BaseExchange
 
 router = APIRouter()
 
 
 @router.get("/ticker/{exchange}/{symbol}", response_model=TickerResponse)
 async def get_ticker(
-    exchange: str,
     symbol: str,
+    exchange: str,
+    exc: BaseExchange = Depends(get_exchange_client),
     _=Depends(get_current_active_user),
 ):
-    exc = get_exchange(exchange)
     raw = await exc.fetch_ticker(symbol)
     return TickerResponse(
         exchange=exchange,
@@ -44,13 +44,13 @@ async def get_ticker(
 
 @router.get("/ohlcv/{exchange}/{symbol}", response_model=list[OHLCVResponse])
 async def get_ohlcv(
-    exchange: str,
     symbol: str,
+    exchange: str,
     timeframe: str = Query(default="1h"),
     limit: int = Query(default=100, ge=1, le=1000),
+    exc: BaseExchange = Depends(get_exchange_client),
     _=Depends(get_current_active_user),
 ):
-    exc = get_exchange(exchange)
     candles = await exc.fetch_ohlcv(symbol, timeframe=timeframe, limit=limit)
     return [
         OHLCVResponse(
@@ -67,12 +67,12 @@ async def get_ohlcv(
 
 @router.get("/orderbook/{exchange}/{symbol}", response_model=OrderBookResponse)
 async def get_order_book(
-    exchange: str,
     symbol: str,
+    exchange: str,
     depth: int = Query(default=20, ge=5, le=100),
+    exc: BaseExchange = Depends(get_exchange_client),
     _=Depends(get_current_active_user),
 ):
-    exc = get_exchange(exchange)
     book = await exc.fetch_order_book(symbol, limit=depth)
     return OrderBookResponse(
         exchange=exchange,
@@ -87,9 +87,9 @@ async def get_order_book(
 async def get_market_summary(
     exchange: str = Query(default="binance"),
     symbols: list[str] = Query(default=["BTC/USDT", "ETH/USDT"]),
+    exc: BaseExchange = Depends(get_exchange_client),
     _=Depends(get_current_active_user),
 ):
-    exc = get_exchange(exchange)
     results = []
     for sym in symbols[:10]:
         try:
@@ -108,3 +108,4 @@ async def get_market_summary(
         except ExchangeError:
             pass
     return results
+

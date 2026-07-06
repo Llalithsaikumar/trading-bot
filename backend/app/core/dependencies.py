@@ -148,3 +148,15 @@ class PaginationParams:
 
 
 Pagination = Annotated[PaginationParams, Depends(PaginationParams)]
+
+
+# ---------------------------------------------------------------------------
+# Exchange client
+# ---------------------------------------------------------------------------
+def get_exchange_client(exchange: str = "binance") -> BaseExchange:
+    """FastAPI dependency to retrieve an exchange client adapter by its name."""
+    from app.infrastructure.exchange.factory import get_exchange
+    from app.infrastructure.exchange.base import BaseExchange
+
+    return get_exchange(exchange)
+

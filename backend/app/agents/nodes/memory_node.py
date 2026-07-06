@@ -28,8 +28,13 @@ class MemoryAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.memory_context and state.memory_context.context_key:
+            self._log_info("memory context already loaded, skipping for idempotency")
+            return {"memory_context": state.memory_context}
+
         self._log_info("loading historical context", strategy=state.strategy_id)
         try:
+
             context = await self.load_context(
                 strategy_id=state.strategy_id,
                 exchange=state.exchange,

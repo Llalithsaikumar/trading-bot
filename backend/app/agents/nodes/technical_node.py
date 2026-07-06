@@ -31,8 +31,13 @@ class TechnicalAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.indicators:
+            self._log_info("indicators already computed, skipping for idempotency")
+            return {"indicators": state.indicators}
+
         self._log_info("computing indicators", symbols=list(state.ohlcv.keys()))
         try:
+
             indicators: dict[str, dict[str, Any]] = {}
 
             for symbol, ohlcv in state.ohlcv.items():

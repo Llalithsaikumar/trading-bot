@@ -44,8 +44,21 @@ class DecisionAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.signal is not None and state.signal != TradingSignal.NEUTRAL:
+            self._log_info("signal already computed, skipping for idempotency")
+            return {
+                "signal": state.signal,
+                "confidence": state.confidence,
+                "reasoning": state.reasoning,
+                "analysis": state.analysis,
+                "suggested_entry": state.suggested_entry,
+                "suggested_stop_loss": state.suggested_stop_loss,
+                "suggested_take_profit": state.suggested_take_profit,
+            }
+
         primary_symbol = state.symbols[0] if state.symbols else "UNKNOWN"
         self._log_info("running LLM decision", symbol=primary_symbol)
+
         try:
             signal, confidence, reasoning, entry, sl, tp = await self._run_decision(state)
             self._log_info(

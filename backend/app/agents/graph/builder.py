@@ -47,6 +47,56 @@ def _should_execute(state: TradingState) -> str:
 # ---------------------------------------------------------------------------
 
 
+class DefaultConfigCompiledGraph:
+    """Wraps CompiledStateGraph to automatically inject a thread_id if a checkpointer is used."""
+
+    def __init__(self, compiled_graph: Any) -> None:
+        self._graph = compiled_graph
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._graph, name)
+
+    async def ainvoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        import uuid
+        if config is None:
+            config = {}
+        if "configurable" not in config:
+            config["configurable"] = {}
+        if "thread_id" not in config["configurable"]:
+            config["configurable"]["thread_id"] = str(uuid.uuid4())
+        return await self._graph.ainvoke(input, config, **kwargs)
+
+    async def astream(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        import uuid
+        if config is None:
+            config = {}
+        if "configurable" not in config:
+            config["configurable"] = {}
+        if "thread_id" not in config["configurable"]:
+            config["configurable"]["thread_id"] = str(uuid.uuid4())
+        return self._graph.astream(input, config, **kwargs)
+
+    def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        import uuid
+        if config is None:
+            config = {}
+        if "configurable" not in config:
+            config["configurable"] = {}
+        if "thread_id" not in config["configurable"]:
+            config["configurable"]["thread_id"] = str(uuid.uuid4())
+        return self._graph.invoke(input, config, **kwargs)
+
+    def stream(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        import uuid
+        if config is None:
+            config = {}
+        if "configurable" not in config:
+            config["configurable"] = {}
+        if "thread_id" not in config["configurable"]:
+            config["configurable"]["thread_id"] = str(uuid.uuid4())
+        return self._graph.stream(input, config, **kwargs)
+
+
 class TradingGraphBuilder:
     """
     Builds the compiled 9-node LangGraph workflow.
@@ -64,6 +114,9 @@ class TradingGraphBuilder:
         self._deps = deps
 
     def build(self) -> CompiledStateGraph:
+        from langgraph.types import RetryPolicy
+        from langgraph.checkpoint.memory import MemorySaver
+
         # ── Instantiate all 9 agents with injected dependencies ───────────────
         memory_agent = MemoryAgent(self._deps)
         market_agent = MarketAgent(self._deps)
@@ -78,16 +131,19 @@ class TradingGraphBuilder:
         # ── Build state graph ─────────────────────────────────────────────────
         graph = StateGraph(TradingState)
 
-        # Register nodes (bound methods are callable — LangGraph accepts them)
-        graph.add_node("memory", memory_agent.run)
-        graph.add_node("market", market_agent.run)
-        graph.add_node("news", news_agent.run)
-        graph.add_node("technical", technical_agent.run)
-        graph.add_node("portfolio", portfolio_agent.run)
-        graph.add_node("decision", decision_agent.run)
-        graph.add_node("risk", risk_agent.run)
-        graph.add_node("execution", execution_agent.run)
-        graph.add_node("reflection", reflection_agent.run)
+        # Register nodes with retry policies
+        retry_policy = RetryPolicy(max_attempts=3)
+
+        graph.add_node("memory", memory_agent.run, retry_policy=retry_policy)
+        graph.add_node("market", market_agent.run, retry_policy=retry_policy)
+        graph.add_node("news", news_agent.run, retry_policy=retry_policy)
+        graph.add_node("technical", technical_agent.run, retry_policy=retry_policy)
+        graph.add_node("portfolio", portfolio_agent.run, retry_policy=retry_policy)
+        graph.add_node("decision", decision_agent.run, retry_policy=retry_policy)
+        graph.add_node("risk", risk_agent.run, retry_policy=retry_policy)
+        graph.add_node("execution", execution_agent.run, retry_policy=retry_policy)
+        graph.add_node("reflection", reflection_agent.run, retry_policy=retry_policy)
+
 
         # ── Linear edges: memory → … → risk ──────────────────────────────────
         graph.set_entry_point("memory")
@@ -112,7 +168,9 @@ class TradingGraphBuilder:
         graph.add_edge("execution", "reflection")
         graph.add_edge("reflection", END)
 
-        return graph.compile()
+        # Compile graph with memory saver checkpointer
+        compiled = graph.compile(checkpointer=MemorySaver())
+        return DefaultConfigCompiledGraph(compiled)
 
 
 # ---------------------------------------------------------------------------
@@ -134,3 +192,4 @@ def build_trading_graph(
         A compiled LangGraph StateGraph ready for ainvoke().
     """
     return TradingGraphBuilder(deps or AgentDependencies()).build()
+
