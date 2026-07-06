@@ -5,6 +5,7 @@ All concrete agent nodes inherit from BaseAgent and receive their
 dependencies through AgentDependencies — they never import infrastructure
 singletons directly.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

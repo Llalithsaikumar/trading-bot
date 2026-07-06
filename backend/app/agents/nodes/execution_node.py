@@ -5,6 +5,7 @@ Only runs when state.risk_approved=True (conditional edge from RiskAgent).
 No trading logic is implemented in this phase — stubs are in place for
 the full order-placement implementation.
 """
+
 from __future__ import annotations
 
 from typing import Any

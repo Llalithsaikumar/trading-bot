@@ -1,4 +1,5 @@
 """Market data schemas."""
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -8,7 +9,7 @@ from app.domain.schemas.common import BaseSchema
 
 
 class OHLCVResponse(BaseSchema):
-    timestamp: str   # unix ms as string for interop
+    timestamp: str  # unix ms as string for interop
     open: Decimal
     high: Decimal
     low: Decimal

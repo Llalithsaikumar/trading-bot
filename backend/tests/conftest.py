@@ -2,6 +2,7 @@
 Pytest fixtures — shared across all test modules.
 Provides an async test client, test DB session, and factories.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -83,4 +84,3 @@ async def client(db_session) -> AsyncGenerator[AsyncClient, None]:
         yield ac
 
     app.dependency_overrides.clear()
-

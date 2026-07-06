@@ -7,6 +7,7 @@ Revision ID: 0002_paper_trading
 Revises: 0001_initial_schema
 Create Date: 2026-07-05
 """
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -50,15 +51,15 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.func.now(),
         ),
-        sa.Column("equity",         sa.Numeric(20, 8), nullable=False),
-        sa.Column("balance",        sa.Numeric(20, 8), nullable=False),
+        sa.Column("equity", sa.Numeric(20, 8), nullable=False),
+        sa.Column("balance", sa.Numeric(20, 8), nullable=False),
         sa.Column("unrealized_pnl", sa.Numeric(20, 8), nullable=False, server_default="0"),
-        sa.Column("realized_pnl",   sa.Numeric(20, 8), nullable=False, server_default="0"),
-        sa.Column("daily_pnl",      sa.Numeric(20, 8), nullable=False, server_default="0"),
+        sa.Column("realized_pnl", sa.Numeric(20, 8), nullable=False, server_default="0"),
+        sa.Column("daily_pnl", sa.Numeric(20, 8), nullable=False, server_default="0"),
     )
 
-    op.create_index("ix_equity_history_portfolio_id",  "equity_history", ["portfolio_id"])
-    op.create_index("ix_equity_history_timestamp",     "equity_history", ["timestamp"])
+    op.create_index("ix_equity_history_portfolio_id", "equity_history", ["portfolio_id"])
+    op.create_index("ix_equity_history_timestamp", "equity_history", ["timestamp"])
 
 
 def downgrade() -> None:

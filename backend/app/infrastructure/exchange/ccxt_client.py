@@ -2,6 +2,7 @@
 Backward-compatibility shim — delegates to factory.py.
 Prefer importing from app.infrastructure.exchange directly.
 """
+
 from __future__ import annotations
 
 from .base import ExchangeBase

@@ -2,6 +2,7 @@
 Request / response logging middleware.
 Logs structured JSON: method, path, status, duration, request_id.
 """
+
 from __future__ import annotations
 
 import time

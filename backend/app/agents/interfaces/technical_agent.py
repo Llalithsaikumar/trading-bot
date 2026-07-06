@@ -1,4 +1,5 @@
 """ITechnicalAgent — contract for computing technical indicators."""
+
 from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable

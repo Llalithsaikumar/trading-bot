@@ -2,6 +2,7 @@
 WebSocket endpoints.
 Each endpoint corresponds to a real-time data stream.
 """
+
 from __future__ import annotations
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect

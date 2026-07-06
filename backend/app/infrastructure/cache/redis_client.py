@@ -2,6 +2,7 @@
 Redis client singleton and helper utilities.
 Uses redis-py with hiredis parser for performance.
 """
+
 from __future__ import annotations
 
 from typing import Any

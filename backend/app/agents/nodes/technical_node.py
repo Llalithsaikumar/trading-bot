@@ -4,6 +4,7 @@ Technical Agent node — computes technical indicators from OHLCV data.
 Reuses the indicator helpers in app/agents/analysis_agent/indicators.py
 and wraps them in the modular node interface.
 """
+
 from __future__ import annotations
 
 from typing import Any

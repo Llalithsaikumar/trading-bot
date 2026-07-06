@@ -2,6 +2,7 @@
 Generic async repository.
 Concrete repositories extend this class and call super() methods.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -51,9 +52,7 @@ class BaseRepository(Generic[ModelT]):
         await self._session.refresh(obj)
         return obj
 
-    async def update(
-        self, entity_id: uuid.UUID, data: dict[str, Any]
-    ) -> ModelT | None:
+    async def update(self, entity_id: uuid.UUID, data: dict[str, Any]) -> ModelT | None:
         stmt = (
             update(self.model)
             .where(self.model.id == entity_id)  # type: ignore[attr-defined]

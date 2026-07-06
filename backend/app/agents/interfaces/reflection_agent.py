@@ -1,4 +1,5 @@
 """IReflectionAgent — contract for post-cycle analysis and self-improvement."""
+
 from __future__ import annotations
 
 from typing import Protocol, runtime_checkable

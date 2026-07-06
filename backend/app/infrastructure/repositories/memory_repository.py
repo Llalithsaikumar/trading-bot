@@ -1,4 +1,5 @@
 """Long term memory database repository query engine."""
+
 from __future__ import annotations
 
 import uuid

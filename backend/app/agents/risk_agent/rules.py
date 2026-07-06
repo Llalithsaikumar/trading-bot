@@ -5,6 +5,7 @@ Each rule is a callable that receives TradingState and returns
 (passed: bool, note: str).  Rules are ordered and applied sequentially
 by RiskAgent.evaluate().
 """
+
 from __future__ import annotations
 
 from decimal import Decimal
@@ -75,10 +76,10 @@ def check_position_size(state: TradingState) -> RuleResult:
 # Ordered rule list applied by RiskAgent.evaluate()
 # ---------------------------------------------------------------------------
 RISK_RULES: list[RuleFn] = [
-    check_neutral_signal,        # Fast-exit for NEUTRAL signals
-    check_sufficient_balance,    # No balance → no trade
-    check_signal_confidence,     # Low confidence → no trade
-    check_daily_loss_limit,      # Daily loss circuit breaker
-    check_max_open_positions,    # Concurrency limit
-    check_position_size,         # Size validation (TODO: full impl)
+    check_neutral_signal,  # Fast-exit for NEUTRAL signals
+    check_sufficient_balance,  # No balance → no trade
+    check_signal_confidence,  # Low confidence → no trade
+    check_daily_loss_limit,  # Daily loss circuit breaker
+    check_max_open_positions,  # Concurrency limit
+    check_position_size,  # Size validation (TODO: full impl)
 ]

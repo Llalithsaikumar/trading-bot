@@ -5,6 +5,7 @@ Celery tasks for paper trading background operations.
   sync_position_prices — refresh position prices every ~30 s for live PnL dashboard
   reset_daily_pnl      — zero out daily_pnl on all portfolios at UTC midnight
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -74,7 +75,9 @@ async def _sync_position_prices_async() -> dict:
                 updated += 1
             except Exception as exc:
                 await session.rollback()
-                logger.warning("Position sync failed", portfolio_id=str(portfolio.id), error=str(exc))
+                logger.warning(
+                    "Position sync failed", portfolio_id=str(portfolio.id), error=str(exc)
+                )
     return {"updated": updated}
 
 
@@ -100,6 +103,7 @@ async def _reset_daily_pnl_async() -> dict:
 # ---------------------------------------------------------------------------
 # Public Celery tasks
 # ---------------------------------------------------------------------------
+
 
 @shared_task(
     bind=True,
@@ -350,5 +354,3 @@ def reflect_on_completed_trade(self, order_id: str, realized_pnl: float) -> dict
     except Exception as exc:
         logger.error("reflect_on_completed_trade failed", error=str(exc))
         raise self.retry(exc=exc)
-
-

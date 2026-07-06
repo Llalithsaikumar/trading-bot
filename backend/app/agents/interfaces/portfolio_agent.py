@@ -1,4 +1,5 @@
 """IPortfolioAgent — contract for loading portfolio state and metrics."""
+
 from __future__ import annotations
 
 from decimal import Decimal

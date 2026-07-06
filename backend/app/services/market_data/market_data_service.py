@@ -2,6 +2,7 @@
 MarketDataService — fetch, cache, and serve market data.
 Implements a read-through cache: Redis → Exchange.
 """
+
 from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,10 +42,14 @@ class MarketDataService:
                     ask=Decimal(str(data["ask"])),
                     last=Decimal(str(data["last"])),
                     volume_24h=Decimal(str(data["volume_24h"])),
-                    change_24h_pct=Decimal(str(data["change_24h_pct"])) if data.get("change_24h_pct") else None,
+                    change_24h_pct=Decimal(str(data["change_24h_pct"]))
+                    if data.get("change_24h_pct")
+                    else None,
                     high_24h=Decimal(str(data["high_24h"])) if data.get("high_24h") else None,
                     low_24h=Decimal(str(data["low_24h"])) if data.get("low_24h") else None,
-                    funding_rate=Decimal(str(data["funding_rate"])) if data.get("funding_rate") else None,
+                    funding_rate=Decimal(str(data["funding_rate"]))
+                    if data.get("funding_rate")
+                    else None,
                 )
             except Exception:
                 pass
@@ -81,7 +86,7 @@ class MarketDataService:
             try:
                 exc = get_exchange(exchange)
                 live_candles = await exc.fetch_ohlcv(symbol, timeframe, limit=limit)
-                
+
                 # Check which candles already exist to avoid unique constraint error
                 timestamps = [datetime.fromtimestamp(c[0] / 1000, tz=UTC) for c in live_candles]
                 stmt = select(OHLCV.timestamp).where(
@@ -108,7 +113,7 @@ class MarketDataService:
                             volume=Decimal(str(c[5])),
                         )
                         self._session.add(new_candle)
-                
+
                 await self._session.flush()
                 # Query database again for updated candles
                 candles = await ohlcv_repo.get_candles(exchange, symbol, timeframe, limit=limit)
@@ -186,7 +191,11 @@ class MarketDataService:
         ask = Decimal(str(ticker.get("ask") or 0))
         last = Decimal(str(ticker.get("last") or ticker.get("close") or 0))
         volume = Decimal(str(ticker.get("baseVolume") or ticker.get("volume") or 0))
-        change = Decimal(str(ticker.get("percentage") or 0)) if ticker.get("percentage") is not None else None
+        change = (
+            Decimal(str(ticker.get("percentage") or 0))
+            if ticker.get("percentage") is not None
+            else None
+        )
         high = Decimal(str(ticker.get("high") or 0)) if ticker.get("high") is not None else None
         low = Decimal(str(ticker.get("low") or 0)) if ticker.get("low") is not None else None
 
@@ -225,7 +234,9 @@ class MarketDataService:
             "ask": str(db_ticker.ask),
             "last": str(db_ticker.last),
             "volume_24h": str(db_ticker.volume_24h),
-            "change_24h_pct": str(db_ticker.change_24h_pct) if db_ticker.change_24h_pct is not None else None,
+            "change_24h_pct": str(db_ticker.change_24h_pct)
+            if db_ticker.change_24h_pct is not None
+            else None,
             "high_24h": str(db_ticker.high_24h) if db_ticker.high_24h is not None else None,
             "low_24h": str(db_ticker.low_24h) if db_ticker.low_24h is not None else None,
             "funding_rate": None,
@@ -244,4 +255,3 @@ class MarketDataService:
             high_24h=db_ticker.high_24h,
             low_24h=db_ticker.low_24h,
         )
-

@@ -1,4 +1,5 @@
 """Market data endpoints — live prices via ccxt."""
+
 from __future__ import annotations
 
 from decimal import Decimal

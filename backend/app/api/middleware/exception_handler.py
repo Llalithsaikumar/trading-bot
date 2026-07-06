@@ -2,6 +2,7 @@
 Global exception handlers — map domain exceptions to HTTP responses.
 Register these in app/main.py via app.add_exception_handler().
 """
+
 from __future__ import annotations
 
 from fastapi import Request
@@ -45,9 +46,7 @@ async def forbidden_handler(request: Request, exc: AuthorizationError) -> JSONRe
     )
 
 
-async def risk_limit_handler(
-    request: Request, exc: RiskLimitExceededError
-) -> JSONResponse:
+async def risk_limit_handler(request: Request, exc: RiskLimitExceededError) -> JSONResponse:
     return JSONResponse(
         status_code=422,
         content={"error": exc.message, "code": exc.code},

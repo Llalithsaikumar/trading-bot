@@ -8,6 +8,7 @@ Public API:
   AgentDependencies           — DI container for all agents
   BaseAgent                   — abstract base for all agent nodes
 """
+
 from app.agents.graph.builder import TradingGraphBuilder, build_trading_graph
 from app.agents.graph.state import TradingState
 from app.agents.interfaces.base import AgentDependencies, BaseAgent

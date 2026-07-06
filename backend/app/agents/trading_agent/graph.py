@@ -6,6 +6,7 @@ app/agents/graph/builder.py.  This module re-exports the compiled
 graph and factory function under their original names so existing
 imports (workers, tests) continue to work without changes.
 """
+
 from __future__ import annotations
 
 from app.agents.graph.builder import TradingGraphBuilder, build_trading_graph

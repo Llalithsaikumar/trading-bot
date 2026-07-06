@@ -9,6 +9,7 @@ Design principles:
 - Equity snapshots: recorded after every fill for PnL charting
 - No live orders are ever sent to an exchange
 """
+
 from __future__ import annotations
 
 import uuid
@@ -205,7 +206,6 @@ class PaperTradingEngine:
             logger.warning(f"Failed to trigger trade reflection task: {e}")
 
         logger.info(
-
             "Paper order filled",
             id=str(order.id),
             symbol=order.symbol,
@@ -381,7 +381,9 @@ class PaperTradingEngine:
                 await self._fill(order, fresh, price, is_maker=True)
                 filled.append(order)
             except InsufficientBalanceError as e:
-                logger.warning("Limit order rejected (balance)", order_id=str(order.id), error=str(e))
+                logger.warning(
+                    "Limit order rejected (balance)", order_id=str(order.id), error=str(e)
+                )
                 order.status = OrderStatus.REJECTED
                 self._db.add(order)
                 await self._db.flush()

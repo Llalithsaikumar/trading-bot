@@ -1,4 +1,5 @@
 """Long term memory ORM model."""
+
 from __future__ import annotations
 
 import uuid
@@ -14,7 +15,10 @@ class LongTermMemory(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "long_term_memories"
 
     strategy_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("strategies.id", ondelete="CASCADE"), nullable=False, index=True
+        UUID(as_uuid=True),
+        ForeignKey("strategies.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     run_id: Mapped[str] = mapped_column(String(100), nullable=False)
 

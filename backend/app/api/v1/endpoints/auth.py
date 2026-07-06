@@ -1,4 +1,5 @@
 """Authentication endpoints: register, login, refresh, logout."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, status

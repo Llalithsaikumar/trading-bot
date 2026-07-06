@@ -1,6 +1,7 @@
 """
 AuthService — registration, authentication, token lifecycle.
 """
+
 from __future__ import annotations
 
 import uuid

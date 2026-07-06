@@ -1,4 +1,5 @@
 """Bybit exchange adapter (spot + perpetuals + options via V5 unified API)."""
+
 from __future__ import annotations
 
 from typing import Any, Literal

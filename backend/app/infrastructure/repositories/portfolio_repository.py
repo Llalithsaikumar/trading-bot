@@ -1,4 +1,5 @@
 """Portfolio, Position, and EquityPoint repository queries."""
+
 from __future__ import annotations
 
 import uuid

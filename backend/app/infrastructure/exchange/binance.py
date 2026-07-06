@@ -1,4 +1,5 @@
 """Binance exchange adapter (spot + USDT-M perps + COIN-M futures)."""
+
 from __future__ import annotations
 
 from typing import Any, Literal

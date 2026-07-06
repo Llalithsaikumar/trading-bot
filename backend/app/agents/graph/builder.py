@@ -9,6 +9,7 @@ Usage:
     graph = build_trading_graph(deps)
     result = await graph.ainvoke(initial_state)
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -35,6 +36,7 @@ if TYPE_CHECKING:
 # Conditional router
 # ---------------------------------------------------------------------------
 
+
 def _should_execute(state: TradingState) -> str:
     """Route to execution if risk approved, otherwise skip straight to reflection."""
     return "execution" if state.risk_approved else "reflection"
@@ -43,6 +45,7 @@ def _should_execute(state: TradingState) -> str:
 # ---------------------------------------------------------------------------
 # Builder class
 # ---------------------------------------------------------------------------
+
 
 class TradingGraphBuilder:
     """
@@ -115,6 +118,7 @@ class TradingGraphBuilder:
 # ---------------------------------------------------------------------------
 # Module-level factory (convenience / backwards-compat)
 # ---------------------------------------------------------------------------
+
 
 def build_trading_graph(
     deps: AgentDependencies | None = None,

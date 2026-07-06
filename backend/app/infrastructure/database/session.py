@@ -2,6 +2,7 @@
 Async SQLAlchemy engine and session factory.
 Provides get_db() dependency for FastAPI route handlers.
 """
+
 from __future__ import annotations
 
 from typing import AsyncGenerator
@@ -23,8 +24,8 @@ engine: AsyncEngine = create_async_engine(
     pool_size=settings.DATABASE_POOL_SIZE,
     max_overflow=settings.DATABASE_MAX_OVERFLOW,
     echo=settings.DATABASE_ECHO,
-    pool_pre_ping=True,       # detect stale connections
-    pool_recycle=3600,        # recycle connections after 1 hour
+    pool_pre_ping=True,  # detect stale connections
+    pool_recycle=3600,  # recycle connections after 1 hour
 )
 
 # ---------------------------------------------------------------------------

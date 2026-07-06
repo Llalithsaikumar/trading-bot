@@ -4,6 +4,7 @@ Application entry point.
 Initialises FastAPI, registers routers, mounts middleware,
 and wires up lifespan events (DB pool, Redis, Prometheus).
 """
+
 from __future__ import annotations
 
 from contextlib import asynccontextmanager

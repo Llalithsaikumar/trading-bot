@@ -3,6 +3,7 @@ Alembic migration environment.
 Supports both online (direct DB) and offline (SQL script) modes.
 Async engine is used so models with asyncpg-specific types are recognised.
 """
+
 from __future__ import annotations
 
 import asyncio

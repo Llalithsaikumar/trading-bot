@@ -1,6 +1,7 @@
 """
 PortfolioService — CRUD for user portfolios.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -32,9 +33,7 @@ class PortfolioService:
         portfolio = await self._repo.create(portfolio)
         return PortfolioResponse.model_validate(portfolio)
 
-    async def get_portfolio(
-        self, portfolio_id: uuid.UUID, user_id: uuid.UUID
-    ) -> PortfolioResponse:
+    async def get_portfolio(self, portfolio_id: uuid.UUID, user_id: uuid.UUID) -> PortfolioResponse:
         portfolio = await self._repo.get_with_positions(portfolio_id)
         if portfolio is None:
             raise NotFoundError("Portfolio not found", code="PORTFOLIO_NOT_FOUND")

@@ -1,4 +1,5 @@
 """Trading-related enumerations."""
+
 from __future__ import annotations
 
 from enum import StrEnum
@@ -30,10 +31,10 @@ class OrderStatus(StrEnum):
 
 
 class TimeInForce(StrEnum):
-    GTC = "GTC"   # Good Till Cancelled
-    IOC = "IOC"   # Immediate Or Cancel
-    FOK = "FOK"   # Fill Or Kill
-    GTX = "GTX"   # Good Till Crossing (Post-Only)
+    GTC = "GTC"  # Good Till Cancelled
+    IOC = "IOC"  # Immediate Or Cancel
+    FOK = "FOK"  # Fill Or Kill
+    GTX = "GTX"  # Good Till Crossing (Post-Only)
 
 
 class PositionSide(StrEnum):

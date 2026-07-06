@@ -2,6 +2,7 @@
 WebSocket connection manager.
 Tracks active connections per user/channel and broadcasts messages.
 """
+
 from __future__ import annotations
 
 import asyncio

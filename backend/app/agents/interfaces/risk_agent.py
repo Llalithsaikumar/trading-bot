@@ -1,4 +1,5 @@
 """IRiskAgent — contract for validating trading signals against risk rules."""
+
 from __future__ import annotations
 
 from typing import Protocol, runtime_checkable

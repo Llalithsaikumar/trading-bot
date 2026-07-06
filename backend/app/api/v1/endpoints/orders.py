@@ -1,4 +1,5 @@
 """Order placement and history endpoints."""
+
 from __future__ import annotations
 
 import uuid

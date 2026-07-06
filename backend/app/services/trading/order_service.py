@@ -4,6 +4,7 @@ OrderService — place, cancel, and track orders.
 Routes paper-trading orders through PaperTradingEngine.
 Live trading path is reserved for future implementation.
 """
+
 from __future__ import annotations
 
 import uuid

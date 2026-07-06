@@ -1,6 +1,7 @@
 """
 API v1 router — aggregates all endpoint modules.
 """
+
 from fastapi import APIRouter
 
 from app.api.v1.endpoints.auth import router as auth_router

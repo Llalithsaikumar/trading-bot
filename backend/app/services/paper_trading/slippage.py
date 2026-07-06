@@ -6,12 +6,13 @@ Market orders experience price impact; limit orders do not.
 FIXED model: constant basis-point slippage regardless of order size.
 VOLUME_IMPACT model: slippage increases as order size grows relative to daily volume.
 """
+
 from __future__ import annotations
 
 from decimal import Decimal
 from enum import StrEnum
 
-_DEFAULT_BPS: Decimal = Decimal("10")   # 0.10 % default slippage
+_DEFAULT_BPS: Decimal = Decimal("10")  # 0.10 % default slippage
 _MAX_IMPACT_BPS: Decimal = Decimal("50")  # 0.50 % hard cap
 
 

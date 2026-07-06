@@ -2,6 +2,7 @@
 Central configuration loaded from environment variables / .env file.
 Uses Pydantic v2 BaseSettings for type-safe, validated config.
 """
+
 from __future__ import annotations
 
 from typing import Literal

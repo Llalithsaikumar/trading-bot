@@ -1,4 +1,5 @@
 """Trade Reflection Agent — post-fill trade analysis and memory update."""
+
 from __future__ import annotations
 
 import json
@@ -101,9 +102,7 @@ class TradeReflectionAgent:
             run_id = execution.run_id
 
             stmt_mem = (
-                select(LongTermMemory)
-                .where(LongTermMemory.run_id == execution.run_id)
-                .limit(1)
+                select(LongTermMemory).where(LongTermMemory.run_id == execution.run_id).limit(1)
             )
             result_mem = await self._deps.session.execute(stmt_mem)
             mem_record = result_mem.scalar_one_or_none()

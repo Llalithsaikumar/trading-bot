@@ -4,6 +4,7 @@ All LLM prompt templates for the 9-agent trading workflow.
 Templates use Python str.format() placeholders so they can be rendered
 at runtime by the individual agent nodes.
 """
+
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------

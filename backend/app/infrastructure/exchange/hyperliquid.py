@@ -5,6 +5,7 @@ Hyperliquid is a perpetuals-only DEX — no spot trading.
 Authentication uses a wallet address + private key, not API key/secret.
 Some bulk operations are not supported and are emulated by looping.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -50,9 +51,7 @@ class HyperliquidExchange(CCXTExchangeBase):
 
     # ── Overrides ───────────────────────────────────────────────────────────────
 
-    async def fetch_funding_rates(
-        self, symbols: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def fetch_funding_rates(self, symbols: list[str] | None = None) -> dict[str, Any]:
         """
         Hyperliquid has no bulk funding-rate endpoint.
         Falls back to sequential per-symbol fetches.

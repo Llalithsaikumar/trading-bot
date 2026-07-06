@@ -1,6 +1,7 @@
 """
 UserService — profile management and admin user listing.
 """
+
 from __future__ import annotations
 
 import uuid

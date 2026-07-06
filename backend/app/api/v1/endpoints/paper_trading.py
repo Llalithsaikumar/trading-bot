@@ -8,6 +8,7 @@ operations that only make sense in paper trading context:
   - Get risk metrics (Sharpe, drawdown, win rate, …)
   - Reset a portfolio back to its initial balance
 """
+
 from __future__ import annotations
 
 import uuid
@@ -108,9 +109,7 @@ async def reset_paper_portfolio(
     from app.domain.models.portfolio import Position
 
     await db.execute(sa_delete(Position).where(Position.portfolio_id == portfolio_id))
-    await db.execute(
-        sa_delete(EquityPoint).where(EquityPoint.portfolio_id == portfolio_id)
-    )
+    await db.execute(sa_delete(EquityPoint).where(EquityPoint.portfolio_id == portfolio_id))
 
     portfolio.initial_balance = payload.initial_balance
     portfolio.available_balance = payload.initial_balance
@@ -177,10 +176,7 @@ async def get_risk_metrics(
     eq_repo = EquityRepository(db)
     equity_values = await eq_repo.get_equity_values(portfolio_id)
     trade_pnls = await eq_repo.get_closed_trade_pnls(portfolio_id)
-    total_fees = sum(
-        o.fee
-        for o in await OrderRepository(db).get_filled_by_portfolio(portfolio_id)
-    )
+    total_fees = sum(o.fee for o in await OrderRepository(db).get_filled_by_portfolio(portfolio_id))
 
     metrics = rm.compute(
         equity_history=equity_values,

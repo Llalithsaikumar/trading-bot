@@ -1,4 +1,5 @@
 """IDecisionAgent — contract for LLM-based trading signal generation."""
+
 from __future__ import annotations
 
 from decimal import Decimal

@@ -1,4 +1,5 @@
 """SQLAlchemy ORM models (domain layer)."""
+
 from app.domain.models.base import Base, TimestampMixin
 from app.domain.models.user import User
 from app.domain.models.portfolio import Portfolio, Position

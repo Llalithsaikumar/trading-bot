@@ -1,4 +1,5 @@
 """Notification and alert tasks."""
+
 from __future__ import annotations
 
 from celery import shared_task
@@ -117,4 +118,3 @@ def send_email_notification(user_id: str, subject: str, body: str) -> None:
         logger.info(f"Email notification sent to {email_addr}: {subject}")
     except Exception as e:
         logger.warning(f"Failed to send email to {email_addr} via Mailhog: {e}. Message: {subject}")
-

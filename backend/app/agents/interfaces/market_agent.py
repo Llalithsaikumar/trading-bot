@@ -1,4 +1,5 @@
 """IMarketAgent — contract for fetching raw market data from exchanges."""
+
 from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable

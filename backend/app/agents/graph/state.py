@@ -5,6 +5,7 @@ Sub-models are Pydantic BaseModels that live inside TradingState.
 Each agent owns a specific slice of the state and returns a partial
 update dict that LangGraph merges back.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -21,6 +22,7 @@ from app.domain.enums.trading import TradingSignal
 # ---------------------------------------------------------------------------
 # Sub-models (one per agent's output slice)
 # ---------------------------------------------------------------------------
+
 
 class MemoryContext(BaseModel):
     """Historical context loaded by the Memory Agent at graph start."""
@@ -49,7 +51,7 @@ class MarketSentiment(BaseModel):
     """Aggregated sentiment from the News Agent."""
 
     overall_score: float = 0.0  # -1.0 to 1.0
-    label: str = "neutral"      # bearish | neutral | bullish
+    label: str = "neutral"  # bearish | neutral | bullish
     items: list[NewsItem] = Field(default_factory=list)
     fetched_at: datetime | None = None
 
@@ -81,7 +83,7 @@ class ReflectionResult(BaseModel):
 
     summary: str = ""
     lessons_learned: list[str] = Field(default_factory=list)
-    signal_quality_score: float = 0.0   # 0.0–1.0
+    signal_quality_score: float = 0.0  # 0.0–1.0
     process_quality_score: float = 0.0  # 0.0–1.0
     data_quality_issues: list[str] = Field(default_factory=list)
     memory_updates: list[dict[str, Any]] = Field(default_factory=list)
@@ -91,6 +93,7 @@ class ReflectionResult(BaseModel):
 # ---------------------------------------------------------------------------
 # Primary graph state
 # ---------------------------------------------------------------------------
+
 
 class TradingState(BaseModel):
     """
@@ -135,9 +138,9 @@ class TradingState(BaseModel):
 
     # ── Decision Agent output ─────────────────────────────────────────────────
     signal: TradingSignal | None = None
-    confidence: float = 0.0          # 0.0–1.0
+    confidence: float = 0.0  # 0.0–1.0
     reasoning: str = ""
-    analysis: str = ""               # extended market analysis narrative
+    analysis: str = ""  # extended market analysis narrative
     suggested_entry: Decimal | None = None
     suggested_stop_loss: Decimal | None = None
     suggested_take_profit: Decimal | None = None
@@ -145,7 +148,7 @@ class TradingState(BaseModel):
     # ── Risk Agent output ─────────────────────────────────────────────────────
     risk_approved: bool = False
     risk_violations: list[RiskViolation] = Field(default_factory=list)
-    risk_score: float = 1.0          # 1.0 = no risk, 0.0 = blocked
+    risk_score: float = 1.0  # 1.0 = no risk, 0.0 = blocked
 
     # ── Execution Agent output ────────────────────────────────────────────────
     order_placed: bool = False

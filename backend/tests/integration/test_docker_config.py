@@ -4,9 +4,7 @@ import yaml
 
 def test_dockerfile_contents():
     # Verify backend/Dockerfile exists
-    dockerfile_path = os.path.join(
-        os.path.dirname(__file__), "..", "..", "Dockerfile"
-    )
+    dockerfile_path = os.path.join(os.path.dirname(__file__), "..", "..", "Dockerfile")
     assert os.path.exists(dockerfile_path)
 
     with open(dockerfile_path, "r", encoding="utf-8") as f:
@@ -20,9 +18,7 @@ def test_dockerfile_contents():
 
 def test_docker_compose_structure():
     # Verify root docker-compose.yml exists
-    compose_path = os.path.join(
-        os.path.dirname(__file__), "..", "..", "..", "docker-compose.yml"
-    )
+    compose_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "docker-compose.yml")
     assert os.path.exists(compose_path)
 
     with open(compose_path, "r", encoding="utf-8") as f:

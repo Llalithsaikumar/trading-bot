@@ -2,6 +2,7 @@
 FastAPI dependency injection providers.
 Yields DB sessions, Redis client, current user, pagination params, etc.
 """
+
 from __future__ import annotations
 
 import uuid

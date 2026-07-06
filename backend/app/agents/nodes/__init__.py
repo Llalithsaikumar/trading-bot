@@ -1,4 +1,5 @@
 """Concrete agent node implementations for the trading workflow."""
+
 from app.agents.nodes.decision_node import DecisionAgent
 from app.agents.nodes.execution_node import ExecutionAgent
 from app.agents.nodes.market_node import MarketAgent

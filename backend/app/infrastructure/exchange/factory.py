@@ -6,6 +6,7 @@ Usage:
     exchange = get_exchange()                 # uses settings.EXCHANGE_DEFAULT
     await close_all_exchanges()              # call on app shutdown
 """
+
 from __future__ import annotations
 
 from app.core.config import settings
@@ -34,8 +35,7 @@ def _build(exchange_id: str) -> ExchangeBase:
             return HyperliquidExchange.from_settings()
         case _:
             raise ExchangeError(
-                f"Exchange '{exchange_id}' is not supported. "
-                f"Supported: {sorted(_SUPPORTED)}",
+                f"Exchange '{exchange_id}' is not supported. Supported: {sorted(_SUPPORTED)}",
                 code="EXCHANGE_NOT_FOUND",
             )
 

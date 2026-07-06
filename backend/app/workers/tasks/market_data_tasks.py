@@ -1,4 +1,5 @@
 """Background tasks for fetching and storing market data."""
+
 from __future__ import annotations
 
 from celery import shared_task
@@ -104,4 +105,3 @@ def fetch_historical_ohlcv(
     except Exception as exc:
         logger.error("fetch_historical_ohlcv failed", error=str(exc))
         raise self.retry(exc=exc)
-

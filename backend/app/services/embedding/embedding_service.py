@@ -1,4 +1,5 @@
 """Embedding generation service with LangChain and mock fallback."""
+
 from __future__ import annotations
 
 import hashlib
@@ -33,7 +34,6 @@ class MockEmbeddings:
                 idx = vocabulary.index(word)
                 res[idx] += 1.0
         return res
-
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         return [self.embed_query(t) for t in texts]
