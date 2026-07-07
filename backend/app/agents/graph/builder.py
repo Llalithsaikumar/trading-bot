@@ -1,5 +1,5 @@
 """
-TradingGraphBuilder — assembles the 9-node LangGraph workflow with DI.
+TradingGraphBuilder — assembles the 10-node LangGraph workflow with DI.
 
 Usage:
     from app.agents.interfaces.base import AgentDependencies
@@ -20,6 +20,7 @@ from app.agents.graph.state import TradingState
 from app.agents.interfaces.base import AgentDependencies
 from app.agents.nodes.decision_node import DecisionAgent
 from app.agents.nodes.execution_node import ExecutionAgent
+from app.agents.nodes.insight_node import InsightAgent
 from app.agents.nodes.market_node import MarketAgent
 from app.agents.nodes.memory_node import MemoryAgent
 from app.agents.nodes.news_node import NewsAgent
@@ -99,10 +100,10 @@ class DefaultConfigCompiledGraph:
 
 class TradingGraphBuilder:
     """
-    Builds the compiled 9-node LangGraph workflow.
+    Builds the compiled 10-node LangGraph workflow.
 
     Node order:
-      memory → market → news → technical → portfolio → decision → risk
+      memory → market → news → technical → insight → portfolio → decision → risk
         → (conditional) execution → reflection → END
                       ↘ (risk rejected) reflection → END
 
@@ -117,11 +118,12 @@ class TradingGraphBuilder:
         from langgraph.types import RetryPolicy
         from langgraph.checkpoint.memory import MemorySaver
 
-        # ── Instantiate all 9 agents with injected dependencies ───────────────
+        # ── Instantiate all 10 agents with injected dependencies ──────────────
         memory_agent = MemoryAgent(self._deps)
         market_agent = MarketAgent(self._deps)
         news_agent = NewsAgent(self._deps)
         technical_agent = TechnicalAgent(self._deps)
+        insight_agent = InsightAgent(self._deps)
         portfolio_agent = PortfolioAgent(self._deps)
         decision_agent = DecisionAgent(self._deps)
         risk_agent = RiskAgent(self._deps)
@@ -138,6 +140,7 @@ class TradingGraphBuilder:
         graph.add_node("market", market_agent.run, retry_policy=retry_policy)
         graph.add_node("news", news_agent.run, retry_policy=retry_policy)
         graph.add_node("technical", technical_agent.run, retry_policy=retry_policy)
+        graph.add_node("insight", insight_agent.run, retry_policy=retry_policy)
         graph.add_node("portfolio", portfolio_agent.run, retry_policy=retry_policy)
         graph.add_node("decision", decision_agent.run, retry_policy=retry_policy)
         graph.add_node("risk", risk_agent.run, retry_policy=retry_policy)
@@ -150,7 +153,8 @@ class TradingGraphBuilder:
         graph.add_edge("memory", "market")
         graph.add_edge("market", "news")
         graph.add_edge("news", "technical")
-        graph.add_edge("technical", "portfolio")
+        graph.add_edge("technical", "insight")
+        graph.add_edge("insight", "portfolio")
         graph.add_edge("portfolio", "decision")
         graph.add_edge("decision", "risk")
 

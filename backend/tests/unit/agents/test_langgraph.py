@@ -1,4 +1,5 @@
 import uuid
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -36,6 +37,10 @@ async def test_langgraph_execution_routing(mocker):
     mocker.patch(
         "app.agents.nodes.technical_node.TechnicalAgent.run",
         return_value={"indicators": {"BTC/USDT": {}}},
+    )
+    mocker.patch(
+        "app.agents.nodes.insight_node.InsightAgent.run",
+        return_value={"prediction_insights": [], "prediction_sentiment": {}},
     )
     mocker.patch(
         "app.agents.nodes.portfolio_node.PortfolioAgent.run",
@@ -88,14 +93,8 @@ async def test_langgraph_idempotency_and_checkpoints(mocker):
 
     mock_decide = mocker.patch(
         "app.agents.nodes.decision_node.DecisionAgent._run_decision",
-        new_callable=AsyncMock if "AsyncMock" in globals() else None,
+        new_callable=AsyncMock,
     )
-    if mock_decide is None:
-        from unittest.mock import AsyncMock
-        mock_decide = mocker.patch(
-            "app.agents.nodes.decision_node.DecisionAgent._run_decision",
-            new_callable=AsyncMock,
-        )
 
     deps = AgentDependencies()
     agent = DecisionAgent(deps)
@@ -124,6 +123,7 @@ async def test_langgraph_idempotency_and_checkpoints(mocker):
     mocker.patch("app.agents.nodes.market_node.MarketAgent.run", return_value={"tickers": {}, "ohlcv": {}})
     mocker.patch("app.agents.nodes.news_node.NewsAgent.run", return_value={})
     mocker.patch("app.agents.nodes.technical_node.TechnicalAgent.run", return_value={})
+    mocker.patch("app.agents.nodes.insight_node.InsightAgent.run", return_value={})
     mocker.patch("app.agents.nodes.portfolio_node.PortfolioAgent.run", return_value={})
     mocker.patch("app.agents.nodes.decision_node.DecisionAgent.run", return_value={"signal": TradingSignal.NEUTRAL})
     mocker.patch("app.agents.nodes.risk_node.RiskAgent.run", return_value={"risk_approved": False})

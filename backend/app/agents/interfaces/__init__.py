@@ -3,6 +3,7 @@
 from app.agents.interfaces.base import AgentDependencies, BaseAgent
 from app.agents.interfaces.decision_agent import IDecisionAgent
 from app.agents.interfaces.execution_agent import IExecutionAgent
+from app.agents.interfaces.insight_agent import IInsightAgent
 from app.agents.interfaces.market_agent import IMarketAgent
 from app.agents.interfaces.memory_agent import IMemoryAgent
 from app.agents.interfaces.news_agent import INewsAgent
@@ -16,6 +17,7 @@ __all__ = [
     "BaseAgent",
     "IDecisionAgent",
     "IExecutionAgent",
+    "IInsightAgent",
     "IMarketAgent",
     "IMemoryAgent",
     "INewsAgent",

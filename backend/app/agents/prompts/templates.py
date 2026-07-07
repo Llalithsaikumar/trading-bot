@@ -63,6 +63,9 @@ Analyse the following market snapshot and produce a trading signal for {symbol}.
 - Key Headlines:
 {headlines}
 
+## Prediction Markets (Polymarket)
+{prediction_insights}
+
 ## Portfolio State
 - Available Balance: {available_balance} USDT
 - Open Positions: {open_positions_count}

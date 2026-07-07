@@ -103,6 +103,11 @@ class Settings(BaseSettings):
     # ── Monitoring ─────────────────────────────────────────────────────────────
     PROMETHEUS_ENABLED: bool = True
 
+    # ── Polymarket ─────────────────────────────────────────────────────────────
+    POLYMARKET_API_URL: str = "https://gamma-api.polymarket.com"
+    POLYMARKET_ENABLED: bool = True
+    POLYMARKET_CACHE_TTL: int = 300
+
     @property
     def is_production(self) -> bool:
         return self.APP_ENV == "production"

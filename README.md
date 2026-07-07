@@ -13,28 +13,117 @@
 | **Frontend** | React 18 · Vite · TypeScript · Tailwind CSS · Zustand |
 | **DevOps** | Docker Compose · Nginx · Prometheus · Grafana |
 
-## Quick Start
+## Running the Application
 
+There are two ways to run the application: using **Docker Compose** (recommended for local development with all services like PostgreSQL, Redis, Celery, and monitoring), or running the **Frontend and Backend locally** (useful for direct debugging).
+
+### Prerequisites
+
+Ensure you have the following installed on your system:
+- **Docker & Docker Desktop** (for Docker setup)
+- **Python 3.13** (for local backend setup)
+- **Node.js 18+ & npm** (for local frontend setup)
+- **uv** (recommended Python package manager)
+- **Make** (standard utility for command shortcuts)
+
+---
+
+### Option 1: Running with Docker Compose (Recommended)
+
+This compiles and starts the entire suite (PostgreSQL, Redis, Celery Workers/Beat, FastAPI Backend, React Frontend, Prometheus, Grafana, and pgAdmin).
+
+#### 1. Setup Environment
+Initialize the environment file from the template and configure your secrets (such as exchange API keys and LLM keys):
 ```bash
-# 1. Clone and enter
-git clone <repo-url> && cd crypto-trading-platform
+make env-copy
+# Or manually copy .env.example to .env
+# Edit the .env file with your Anthropic/OpenAI keys, database credentials, etc.
+```
 
-# 2. Configure environment
-make env-copy   # creates .env from .env.example
-# Edit .env — set API keys, secrets, etc.
-
-# 3. Start development stack
+#### 2. Build and Start Services
+Start the development containers in the background:
+```bash
 make dev
+```
+This runs the stack with code hot-reloading for both the frontend and backend.
 
-# 4. Run database migrations
+#### 3. Database Migrations & Seeding
+Apply the Alembic migrations and populate the database with default seed data:
+```bash
+# Run migrations
 make migrate
 
-# 5. Access services
-# Frontend   → http://localhost:5173
-# API docs   → http://localhost:8000/docs
-# pgAdmin    → http://localhost:5050
-# Grafana    → http://localhost:3001
+# Seed initial data (User, Strategies, default Portfolio)
+make db-seed
 ```
+
+#### 4. Verification & Testing
+Run all tests inside the Docker environment to verify the setup:
+```bash
+make test
+```
+
+---
+
+### Option 2: Running Locally (Without Docker)
+
+If you prefer to run the components locally, you will need a running PostgreSQL instance and a Redis instance (or you can start them via Docker while running app code locally).
+
+#### 1. Backend Setup
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies using `uv`:
+   ```bash
+   uv sync --all-extras
+   ```
+3. Initialize the environment:
+   ```bash
+   cp .env.example .env
+   # Edit backend/.env to point to your local PostgreSQL/Redis servers
+   ```
+4. Run migrations and seed data:
+   ```bash
+   uv run alembic upgrade head
+   uv run python -m scripts.seed_db
+   ```
+5. Start the Celery workers (in a separate terminal):
+   ```bash
+   uv run celery -A app.workers.celery_worker worker --loglevel=info
+   uv run celery -A app.workers.celery_worker beat --loglevel=info
+   ```
+6. Start the FastAPI development server:
+   ```bash
+   uv run uvicorn app.main:create_app --factory --reload --host 127.0.0.1 --port 8000
+   ```
+
+#### 2. Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install npm packages:
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+### Accessing Services
+
+Once started, the services are accessible at:
+- **Frontend App**: [http://localhost:5173](http://localhost:5173)
+- **Backend API Docs (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Redoc API Docs**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+- **pgAdmin (Postgres GUI)**: [http://localhost:5050](http://localhost:5050)
+- **Grafana (Dashboards)**: [http://localhost:3001](http://localhost:3001)
+- **Prometheus**: [http://localhost:9090](http://localhost:9090)
+
 
 ## Project Structure
 
