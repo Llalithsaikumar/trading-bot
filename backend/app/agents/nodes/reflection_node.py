@@ -37,7 +37,6 @@ class ReflectionAgent(BaseAgent):
 
         self._log_info(
             "reflecting on cycle",
-
             signal=str(state.signal),
             risk_approved=state.risk_approved,
             order_placed=state.order_placed,

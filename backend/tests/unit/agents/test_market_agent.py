@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from unittest.mock import AsyncMock
 from sqlalchemy import select
@@ -36,7 +38,9 @@ async def test_market_agent_run_and_persist(db_session, mocker):
     mock_ws = mocker.patch(
         "app.agents.nodes.market_node.ws_manager.broadcast_channel", new_callable=AsyncMock
     )
-    mocker.patch("app.services.market_data.market_data_service.get_exchange", return_value=mock_exchange)
+    mocker.patch(
+        "app.services.market_data.market_data_service.get_exchange", return_value=mock_exchange
+    )
 
     # 2. Setup AgentDependencies and MarketAgent
     deps = AgentDependencies(session=db_session, exchange=mock_exchange)
@@ -82,16 +86,12 @@ async def test_market_agent_replay_and_caching(db_session, mocker):
 
     from app.domain.models.market_data import OHLCV, OrderBookSnapshot
 
-    replay_time = arrow.get("2026-07-06T12:00:00Z").datetime
-    strategy_id = uuid.uuid4() if "uuid" in globals() else uuid_lib.uuid4() if "uuid_lib" in globals() else None
-    if strategy_id is None:
-        import uuid as uuid_lib
-        strategy_id = uuid_lib.uuid4()
+    strategy_id = uuid.uuid4()
 
     # 1. Create a strategy config with replay timestamp
     strategy = Strategy(
         id=strategy_id,
-        user_id=uuid_lib.uuid4(),
+        user_id=uuid.uuid4(),
         name="Replay Strategy",
         exchange="binance",
         symbols=["BTC/USDT"],
@@ -152,4 +152,3 @@ async def test_market_agent_replay_and_caching(db_session, mocker):
 
     # Ensure no WebSocket broadcasts occurred
     assert mock_ws.call_count == 0
-

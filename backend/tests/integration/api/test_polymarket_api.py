@@ -38,7 +38,7 @@ async def test_polymarket_endpoints(client, db_session):
         volume=Decimal("1000000.00"),
         volume_24h=Decimal("50000.00"),
         active=True,
-        fetched_at=fetched_at
+        fetched_at=fetched_at,
     )
     db_session.add(snap)
     await db_session.commit()

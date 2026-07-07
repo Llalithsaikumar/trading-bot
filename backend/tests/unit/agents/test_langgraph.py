@@ -119,13 +119,21 @@ async def test_langgraph_idempotency_and_checkpoints(mocker):
     assert not mock_decide.called
 
     # Mock node execution to test checkpoint state retrieval
-    mocker.patch("app.agents.nodes.memory_node.MemoryAgent.run", return_value={"memory_context": MemoryContext(context_key="loaded")})
-    mocker.patch("app.agents.nodes.market_node.MarketAgent.run", return_value={"tickers": {}, "ohlcv": {}})
+    mocker.patch(
+        "app.agents.nodes.memory_node.MemoryAgent.run",
+        return_value={"memory_context": MemoryContext(context_key="loaded")},
+    )
+    mocker.patch(
+        "app.agents.nodes.market_node.MarketAgent.run", return_value={"tickers": {}, "ohlcv": {}}
+    )
     mocker.patch("app.agents.nodes.news_node.NewsAgent.run", return_value={})
     mocker.patch("app.agents.nodes.technical_node.TechnicalAgent.run", return_value={})
     mocker.patch("app.agents.nodes.insight_node.InsightAgent.run", return_value={})
     mocker.patch("app.agents.nodes.portfolio_node.PortfolioAgent.run", return_value={})
-    mocker.patch("app.agents.nodes.decision_node.DecisionAgent.run", return_value={"signal": TradingSignal.NEUTRAL})
+    mocker.patch(
+        "app.agents.nodes.decision_node.DecisionAgent.run",
+        return_value={"signal": TradingSignal.NEUTRAL},
+    )
     mocker.patch("app.agents.nodes.risk_node.RiskAgent.run", return_value={"risk_approved": False})
     mocker.patch("app.agents.nodes.reflection_node.ReflectionAgent.run", return_value={})
 
@@ -135,7 +143,7 @@ async def test_langgraph_idempotency_and_checkpoints(mocker):
 
     config = {"configurable": {"thread_id": "test-thread-id"}}
     state.signal = None  # reset signal to allow standard mock run
-    
+
     result = await graph.ainvoke(state, config=config)
     assert result is not None
 

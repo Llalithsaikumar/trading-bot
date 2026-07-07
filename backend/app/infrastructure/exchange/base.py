@@ -185,7 +185,6 @@ class BaseExchange(ABC):
 ExchangeBase = BaseExchange
 
 
-
 # ---------------------------------------------------------------------------
 # Shared CCXT implementation — subclasses provide exchange_id + set _ccxt
 # ---------------------------------------------------------------------------
@@ -271,7 +270,9 @@ class CCXTExchangeBase(ExchangeBase, ABC):
         params: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         async with ccxt_error_handler(self.exchange_id, "fetch_orders"):
-            return await self._ccxt.fetch_orders(symbol, since=since, limit=limit, params=params or {})
+            return await self._ccxt.fetch_orders(
+                symbol, since=since, limit=limit, params=params or {}
+            )
 
     # ── WebSocket async generators ──────────────────────────────────────────────
 

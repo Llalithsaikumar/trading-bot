@@ -32,7 +32,6 @@ class NewsAgent(BaseAgent):
 
         self._log_info("fetching news", symbols=state.symbols)
         try:
-
             news_items = await self.fetch_news(state.symbols, limit=20)
             sentiment = await self.compute_sentiment(news_items, state.symbols)
 
