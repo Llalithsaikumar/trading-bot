@@ -108,4 +108,3 @@ async def get_market_summary(
         except ExchangeError:
             pass
     return results
-

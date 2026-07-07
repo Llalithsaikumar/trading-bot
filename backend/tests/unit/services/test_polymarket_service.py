@@ -22,7 +22,7 @@ async def test_polymarket_service_fetch_and_filter(db_session, mocker):
             "volume24h": "25000.00",
             "endDate": "2026-12-31T23:59:00Z",
             "active": True,
-            "category": "Crypto"
+            "category": "Crypto",
         },
         {
             "id": "2",
@@ -35,7 +35,7 @@ async def test_polymarket_service_fetch_and_filter(db_session, mocker):
             "volume24h": "150000.00",
             "endDate": "2028-11-07T23:59:00Z",
             "active": True,
-            "category": "Politics"
+            "category": "Politics",
         },
         {
             "id": "3",
@@ -48,21 +48,21 @@ async def test_polymarket_service_fetch_and_filter(db_session, mocker):
             "volume24h": "2000.00",
             "endDate": "2026-08-30T00:00:00Z",
             "active": True,
-            "category": "Crypto"
-        }
+            "category": "Crypto",
+        },
     ]
 
     # Mock httpx.AsyncClient
     mock_client = MagicMock()
     mock_client.__aenter__ = AsyncMock(return_value=mock_client)
     mock_client.__aexit__ = AsyncMock(return_value=None)
-    
+
     mock_resp = MagicMock()
     mock_resp.status_code = 200
     mock_resp.json.return_value = mock_response_data
     mock_resp.raise_for_status = MagicMock()
     mock_client.get = AsyncMock(return_value=mock_resp)
-    
+
     mocker.patch("httpx.AsyncClient", return_value=mock_client)
 
     service = PolymarketService(db_session)
@@ -70,7 +70,7 @@ async def test_polymarket_service_fetch_and_filter(db_session, mocker):
 
     # Politics market (id=2) should be filtered out
     assert len(markets) == 2
-    
+
     m1 = next(m for m in markets if m.condition_id == "cond1")
     assert m1.question == "Will Bitcoin price reach $100k in 2026?"
     assert m1.outcome_yes_price == Decimal("0.65")
@@ -78,7 +78,7 @@ async def test_polymarket_service_fetch_and_filter(db_session, mocker):
     assert m1.liquidity == Decimal("150000.00")
     assert m1.volume == Decimal("500000.00")
     assert m1.active is True
-    
+
     m2 = next(m for m in markets if m.condition_id == "cond3")
     assert m2.question == "Will Ethereum gas fees drop below 5 gwei?"
     assert m2.outcome_yes_price == Decimal("0.20")
@@ -102,7 +102,7 @@ async def test_polymarket_service_summary(db_session):
         volume=Decimal("5000.00"),
         volume_24h=Decimal("500.00"),
         active=True,
-        fetched_at=fetched_at
+        fetched_at=fetched_at,
     )
     snap2 = PolymarketSnapshot(
         condition_id="c2",
@@ -113,7 +113,7 @@ async def test_polymarket_service_summary(db_session):
         volume=Decimal("8000.00"),
         volume_24h=Decimal("800.00"),
         active=True,
-        fetched_at=fetched_at
+        fetched_at=fetched_at,
     )
     db_session.add(snap1)
     db_session.add(snap2)

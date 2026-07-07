@@ -32,7 +32,9 @@ class ExecutionAgent(BaseAgent):
 
     async def run(self, state: TradingState) -> dict[str, Any]:
         if state.order_placed or state.order_id:
-            self._log_info("order already placed, skipping for idempotency", order_id=state.order_id)
+            self._log_info(
+                "order already placed, skipping for idempotency", order_id=state.order_id
+            )
             return {"order_placed": True, "order_id": state.order_id}
 
         self._log_info(

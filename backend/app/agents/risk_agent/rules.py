@@ -7,7 +7,8 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Callable
 from decimal import Decimal
-from typing import Any, Coroutine
+from typing import Any
+from collections.abc import Coroutine
 import uuid
 
 from sqlalchemy import select
@@ -171,7 +172,9 @@ def check_position_sizing_and_kelly(state: TradingState, session: Any) -> RuleRe
         win_rate = 0.5
 
     # Win/Loss ratio r = reward / risk
-    reward = abs(tp - entry) if tp else unit_risk * Decimal("2.0")  # Default to 2:1 RR if TP not set
+    reward = (
+        abs(tp - entry) if tp else unit_risk * Decimal("2.0")
+    )  # Default to 2:1 RR if TP not set
     r = float(reward / unit_risk)
     if r <= 0:
         r = 1.0
@@ -184,7 +187,10 @@ def check_position_sizing_and_kelly(state: TradingState, session: Any) -> RuleRe
     half_kelly_f = Decimal(str(max(0.0, 0.5 * kelly_f)))
 
     if half_kelly_f <= 0:
-        return False, f"Kelly Criterion suggests rejecting the trade: negative expected value (win rate: {p:.2f}, RR: {r:.2f})"
+        return (
+            False,
+            f"Kelly Criterion suggests rejecting the trade: negative expected value (win rate: {p:.2f}, RR: {r:.2f})",
+        )
 
     kelly_capital = half_kelly_f * equity
     kelly_size = kelly_capital / entry

@@ -8,7 +8,8 @@ from __future__ import annotations
 import asyncio
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from typing import TYPE_CHECKING, Any
+from collections.abc import AsyncIterator
 
 import ccxt
 from loguru import logger
@@ -54,10 +55,12 @@ class MarketAgent(BaseAgent):
             timeframe=state.timeframe,
         )
         try:
-
             self._replay_timestamp = await self._get_replay_timestamp(state)
             if self._replay_timestamp:
-                self._log_info("running in historical replay mode", replay_time=self._replay_timestamp.isoformat())
+                self._log_info(
+                    "running in historical replay mode",
+                    replay_time=self._replay_timestamp.isoformat(),
+                )
 
             ohlcv: dict[str, list[dict[str, Any]]] = {}
             tickers: dict[str, dict[str, Any]] = {}
@@ -67,9 +70,7 @@ class MarketAgent(BaseAgent):
                 # 1. Fetch Ticker & OHLCV
                 if self._replay_timestamp:
                     tickers[symbol] = await self.fetch_ticker(state.exchange, symbol)
-                    ohlcv[symbol] = await self.fetch_ohlcv(
-                        state.exchange, symbol, state.timeframe
-                    )
+                    ohlcv[symbol] = await self.fetch_ohlcv(state.exchange, symbol, state.timeframe)
                 else:
                     if self._market_service:
                         ticker_resp = await self._market_service.get_ticker(state.exchange, symbol)
@@ -153,11 +154,11 @@ class MarketAgent(BaseAgent):
             for symbol in symbols:
                 tasks.append(asyncio.create_task(self._watch_ticker_stream(exc, symbol)))
                 tasks.append(asyncio.create_task(self._watch_orderbook_stream(exc, symbol)))
-                tasks.append(
-                    asyncio.create_task(self._watch_ohlcv_stream(exc, symbol, timeframe))
-                )
+                tasks.append(asyncio.create_task(self._watch_ohlcv_stream(exc, symbol, timeframe)))
 
-            logger.info("Started CCXT Pro WebSocket streams", exchange=exc.exchange_id, symbols=symbols)
+            logger.info(
+                "Started CCXT Pro WebSocket streams", exchange=exc.exchange_id, symbols=symbols
+            )
             await asyncio.gather(*tasks)
         except (AttributeError, NotImplementedError, ccxt.NotSupported) as exc_ws:
             logger.warning(
@@ -176,7 +177,9 @@ class MarketAgent(BaseAgent):
                 "bid": float(raw_ticker.get("bid") or 0.0),
                 "ask": float(raw_ticker.get("ask") or 0.0),
                 "last": float(raw_ticker.get("last") or raw_ticker.get("close") or 0.0),
-                "volume_24h": float(raw_ticker.get("baseVolume") or raw_ticker.get("volume") or 0.0),
+                "volume_24h": float(
+                    raw_ticker.get("baseVolume") or raw_ticker.get("volume") or 0.0
+                ),
                 "change_24h_pct": float(raw_ticker.get("percentage") or 0.0),
             }
             # Persist to DB if session exists
@@ -206,7 +209,7 @@ class MarketAgent(BaseAgent):
             await self._broadcast_orderbook(exc.exchange_id, symbol, ob_data)
 
     async def _watch_ohlcv_stream(self, exc: Any, symbol: str, timeframe: str) -> None:
-        async for raw_candles in exc.watch_ohlcv(symbol, timeframe):
+        async for _raw_candles in exc.watch_ohlcv(symbol, timeframe):
             # Persist
             if self._deps.session and self._market_service:
                 await self._market_service.get_ohlcv(exc.exchange_id, symbol, timeframe, limit=100)
@@ -230,7 +233,9 @@ class MarketAgent(BaseAgent):
                 try:
                     # Sync ticker & OHLCV via service (performs postgres updates)
                     if self._market_service:
-                        ticker_resp = await self._market_service.sync_ticker(exc.exchange_id, symbol)
+                        ticker_resp = await self._market_service.sync_ticker(
+                            exc.exchange_id, symbol
+                        )
                         ticker_data = {
                             "bid": float(ticker_resp.bid),
                             "ask": float(ticker_resp.ask),
@@ -461,9 +466,15 @@ class MarketAgent(BaseAgent):
     # ── Utilities ──────────────────────────────────────────────────────────────
 
     async def _get_replay_timestamp(self, state: Any | None) -> datetime | None:
-        if state and hasattr(state, "node_errors") and state.node_errors and "replay_timestamp" in state.node_errors:
+        if (
+            state
+            and hasattr(state, "node_errors")
+            and state.node_errors
+            and "replay_timestamp" in state.node_errors
+        ):
             try:
                 import arrow
+
                 return arrow.get(state.node_errors["replay_timestamp"]).datetime
             except Exception:
                 pass
@@ -472,9 +483,11 @@ class MarketAgent(BaseAgent):
             try:
                 import uuid
                 from app.domain.models.strategy import Strategy
+
                 strategy = await self._deps.session.get(Strategy, uuid.UUID(state.strategy_id))
                 if strategy and strategy.config and "replay_timestamp" in strategy.config:
                     import arrow
+
                     return arrow.get(strategy.config["replay_timestamp"]).datetime
             except Exception:
                 pass
@@ -484,6 +497,7 @@ class MarketAgent(BaseAgent):
         if self._deps.redis:
             try:
                 import json
+
                 val = await self._deps.redis.get(key)
                 if val:
                     return json.loads(val)
@@ -495,6 +509,7 @@ class MarketAgent(BaseAgent):
         if self._deps.redis:
             try:
                 import json
+
                 await self._deps.redis.set(key, json.dumps(value), ex=ttl)
             except Exception:
                 pass
@@ -511,7 +526,10 @@ class MarketAgent(BaseAgent):
             except Exception as exc:
                 # Catch transient network or retryable errors
                 import ccxt
-                if not isinstance(exc, (ccxt.NetworkError, ccxt.RequestTimeout, asyncio.TimeoutError)):
+
+                if not isinstance(
+                    exc, (ccxt.NetworkError, ccxt.RequestTimeout, asyncio.TimeoutError)
+                ):
                     raise
                 if attempt == attempts - 1:
                     raise
@@ -523,4 +541,3 @@ class MarketAgent(BaseAgent):
                 await asyncio.sleep(delay)
                 delay *= 2
         raise RuntimeError("Retry loop exhausted")
-

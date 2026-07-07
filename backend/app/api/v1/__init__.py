@@ -27,4 +27,3 @@ api_router.include_router(alerts_router, prefix="/alerts", tags=["Alerts"])
 api_router.include_router(ws_router, prefix="/ws", tags=["WebSocket"])
 api_router.include_router(paper_trading_router, prefix="/paper", tags=["Paper Trading"])
 api_router.include_router(polymarket_router, prefix="/polymarket", tags=["Polymarket Insights"])
-

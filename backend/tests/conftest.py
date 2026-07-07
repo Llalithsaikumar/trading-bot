@@ -6,6 +6,7 @@ Provides an async test client, test DB session, and factories.
 from __future__ import annotations
 
 import asyncio
+import os
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -13,6 +14,13 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+os.environ.setdefault("APP_SECRET_KEY", "test-app-secret")
+os.environ.setdefault("JWT_SECRET_KEY", "test-jwt-secret")
+os.environ.setdefault(
+    "DATABASE_URL",
+    "postgresql+asyncpg://test:test@localhost:5432/test",
+)
 
 from app.domain.models.base import Base
 from app.main import create_app
@@ -85,7 +93,9 @@ class MockRedis:
 @pytest.fixture(autouse=True)
 def mock_redis_client(mocker):
     mock_instance = MockRedis()
-    mocker.patch("app.infrastructure.cache.redis_client.get_redis_client", return_value=mock_instance)
+    mocker.patch(
+        "app.infrastructure.cache.redis_client.get_redis_client", return_value=mock_instance
+    )
     return mock_instance
 
 
@@ -103,4 +113,3 @@ async def client(db_session) -> AsyncGenerator[AsyncClient]:
         yield ac
 
     app.dependency_overrides.clear()
-

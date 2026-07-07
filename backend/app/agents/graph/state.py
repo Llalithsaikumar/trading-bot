@@ -75,7 +75,6 @@ class PortfolioMetrics(BaseModel):
     sharpe_ratio: float | None = None
 
 
-
 class RiskViolation(BaseModel):
     """A single violated risk rule."""
 
@@ -94,7 +93,6 @@ class ReflectionResult(BaseModel):
     data_quality_issues: list[str] = Field(default_factory=list)
     memory_updates: list[dict[str, Any]] = Field(default_factory=list)
     recommended_adjustments: list[str] = Field(default_factory=list)
-
 
 
 class PredictionInsight(BaseModel):
@@ -176,7 +174,6 @@ class TradingState(BaseModel):
     suggested_take_profit: Decimal | None = None
     suggested_size: Decimal | None = None
 
-
     # ── Risk Agent output ─────────────────────────────────────────────────────
     risk_approved: bool = False
     risk_violations: list[RiskViolation] = Field(default_factory=list)
@@ -192,7 +189,9 @@ class TradingState(BaseModel):
 
     # ── Insight Agent output (Polymarket) ─────────────────────────────────────
     prediction_insights: list[PredictionInsight] = Field(default_factory=list)
-    prediction_sentiment: PredictionMarketSentiment = Field(default_factory=PredictionMarketSentiment)
+    prediction_sentiment: PredictionMarketSentiment = Field(
+        default_factory=PredictionMarketSentiment
+    )
 
     # ── Diagnostics ───────────────────────────────────────────────────────────
     # Keyed by node name; set by nodes on failure

@@ -19,12 +19,11 @@ __all__ = [
     "Order",
     "OrderBookSnapshot",
     "PolymarketSnapshot",
-    "TechnicalIndicator",
     "Portfolio",
     "Position",
     "Strategy",
     "StrategyExecution",
+    "TechnicalIndicator",
     "TimestampMixin",
     "User",
 ]
-

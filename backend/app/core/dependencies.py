@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
+    from app.infrastructure.exchange.base import BaseExchange
+
 security_scheme = HTTPBearer(auto_error=False)
 
 
@@ -156,7 +158,5 @@ Pagination = Annotated[PaginationParams, Depends(PaginationParams)]
 def get_exchange_client(exchange: str = "binance") -> BaseExchange:
     """FastAPI dependency to retrieve an exchange client adapter by its name."""
     from app.infrastructure.exchange.factory import get_exchange
-    from app.infrastructure.exchange.base import BaseExchange
 
     return get_exchange(exchange)
-

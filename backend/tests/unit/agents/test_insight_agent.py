@@ -20,7 +20,7 @@ async def test_insight_agent_run(db_session, mocker):
             liquidity=Decimal("1000.00"),
             volume=Decimal("5000.00"),
             end_date=datetime.now(UTC),
-            active=True
+            active=True,
         ),
         MagicMock(
             condition_id="c2",
@@ -29,8 +29,8 @@ async def test_insight_agent_run(db_session, mocker):
             liquidity=Decimal("2000.00"),
             volume=Decimal("8000.00"),
             end_date=datetime.now(UTC),
-            active=True
-        )
+            active=True,
+        ),
     ]
 
     mock_service = MagicMock()
@@ -41,10 +41,7 @@ async def test_insight_agent_run(db_session, mocker):
     agent = InsightAgent(deps)
 
     state = TradingState(
-        strategy_id="test-strategy",
-        exchange="binance",
-        symbols=["BTC/USDT"],
-        timeframe="1h"
+        strategy_id="test-strategy", exchange="binance", symbols=["BTC/USDT"], timeframe="1h"
     )
 
     res = await agent.run(state)
@@ -77,19 +74,16 @@ async def test_insight_agent_idempotency():
     agent = InsightAgent(deps)
 
     state = TradingState(
-        strategy_id="test-strategy",
-        exchange="binance",
-        symbols=["BTC/USDT"],
-        timeframe="1h"
+        strategy_id="test-strategy", exchange="binance", symbols=["BTC/USDT"], timeframe="1h"
     )
-    
+
     # Pre-populate insights
     existing_insight = PredictionInsight(
         market_id="ex1",
         question="Will Bitcoin hit $100k?",
         probability=0.7,
         liquidity=Decimal("100"),
-        volume=Decimal("500")
+        volume=Decimal("500"),
     )
     state.prediction_insights = [existing_insight]
 
