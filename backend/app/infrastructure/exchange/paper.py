@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from decimal import Decimal
 from typing import Any
+
 import uuid
 from sqlalchemy import select
 
