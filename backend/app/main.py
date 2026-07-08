@@ -45,15 +45,6 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await get_redis_client()
     logger.info("Redis ready")
 
-    if settings.PROMETHEUS_ENABLED:
-        try:
-            from prometheus_fastapi_instrumentator import Instrumentator
-
-            Instrumentator().instrument(app).expose(app, endpoint="/metrics", tags=["Monitoring"])
-            logger.info("Prometheus metrics exposed at /metrics")
-        except ImportError:
-            logger.warning("prometheus_fastapi_instrumentator not installed; skipping metrics")
-
     logger.info("Application startup complete")
 
     yield
@@ -111,6 +102,17 @@ def create_app() -> FastAPI:
     from app.api.v1 import api_router
 
     application.include_router(api_router, prefix=settings.API_V1_PREFIX)
+
+    # ── Prometheus Monitoring ────────────────────────────────────────────────
+    if settings.PROMETHEUS_ENABLED:
+        try:
+            from prometheus_fastapi_instrumentator import Instrumentator
+
+            Instrumentator().instrument(application).expose(
+                application, endpoint="/metrics", tags=["Monitoring"]
+            )
+        except ImportError:
+            pass
 
     return application
 

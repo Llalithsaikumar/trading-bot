@@ -23,7 +23,9 @@ async def test_memory_agent_run_and_save(db_session, mocker):
     # Mock EmbeddingService
     mock_embed = MagicMock()
     mock_embed.embed_query = AsyncMock(return_value=[0.1] * 1536)
-    mocker.patch("app.services.embedding.embedding_service.EmbeddingService", return_value=mock_embed)
+    mocker.patch(
+        "app.services.embedding.embedding_service.EmbeddingService", return_value=mock_embed
+    )
 
     # Initialize MemoryAgent
     deps = AgentDependencies(session=db_session, redis=mock_redis)

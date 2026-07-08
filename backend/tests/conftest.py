@@ -85,7 +85,9 @@ class MockRedis:
 @pytest.fixture(autouse=True)
 def mock_redis_client(mocker):
     mock_instance = MockRedis()
-    mocker.patch("app.infrastructure.cache.redis_client.get_redis_client", return_value=mock_instance)
+    mocker.patch(
+        "app.infrastructure.cache.redis_client.get_redis_client", return_value=mock_instance
+    )
     return mock_instance
 
 
@@ -103,4 +105,3 @@ async def client(db_session) -> AsyncGenerator[AsyncClient]:
         yield ac
 
     app.dependency_overrides.clear()
-

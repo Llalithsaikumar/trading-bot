@@ -104,7 +104,7 @@ class InsightAgent(BaseAgent):
                 bearish_count += 1
 
         avg_probability = total_probability / len(insights)
-        
+
         total_active_markets = bullish_count + bearish_count
         if total_active_markets > 0:
             signal_strength = (bullish_count - bearish_count) / total_active_markets

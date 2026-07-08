@@ -56,7 +56,6 @@ def upgrade() -> None:
         sa.Column("daily_pnl", sa.Numeric(20, 8), nullable=False, server_default="0"),
     )
 
-    op.create_index("ix_equity_history_portfolio_id", "equity_history", ["portfolio_id"])
     op.create_index("ix_equity_history_timestamp", "equity_history", ["timestamp"])
 
 

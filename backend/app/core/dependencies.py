@@ -19,6 +19,7 @@ from app.infrastructure.database.session import AsyncSessionFactory
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
+    from app.infrastructure.exchange.base import BaseExchange
     from sqlalchemy.ext.asyncio import AsyncSession
 
 security_scheme = HTTPBearer(auto_error=False)
@@ -159,4 +160,3 @@ def get_exchange_client(exchange: str = "binance") -> BaseExchange:
     from app.infrastructure.exchange.base import BaseExchange
 
     return get_exchange(exchange)
-

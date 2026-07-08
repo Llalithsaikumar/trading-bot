@@ -12,7 +12,6 @@ import uuid
 from app.domain.enums.user import UserRole, UserStatus
 
 
-
 class UserCreate(BaseSchema):
     email: EmailStr
     username: str = Field(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")

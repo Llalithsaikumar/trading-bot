@@ -27,7 +27,7 @@ dependencies = [
     # ── Cache / Messaging ─────────────────────────────────────────────────────
     "redis[hiredis]>=5.2.0",
     "celery[redis]>=5.4.0",
-# "redbeat>=2.2.0",
+    # "redbeat>=2.2.0",
 
     # ── Auth ──────────────────────────────────────────────────────────────────
     "python-jose[cryptography]>=3.3.0",

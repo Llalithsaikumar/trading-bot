@@ -34,7 +34,6 @@ class MemoryAgent(BaseAgent):
 
         self._log_info("loading historical context", strategy=state.strategy_id)
         try:
-
             context = await self.load_context(
                 strategy_id=state.strategy_id,
                 exchange=state.exchange,

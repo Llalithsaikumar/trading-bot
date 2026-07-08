@@ -103,4 +103,6 @@ async def test_trade_reflection_agent_success(db_session):
     await db_session.refresh(strategy)
     assert strategy.config is not None
     assert "confidence" in strategy.config
-    assert strategy.config["confidence"] == 0.5  # default stub_reflection returns no_change (0.5 + 0.0)
+    assert (
+        strategy.config["confidence"] == 0.5
+    )  # default stub_reflection returns no_change (0.5 + 0.0)

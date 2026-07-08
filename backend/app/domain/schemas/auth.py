@@ -10,7 +10,6 @@ from pydantic import EmailStr
 from app.domain.schemas.user import UserResponse
 
 
-
 class LoginRequest(BaseSchema):
     email: EmailStr
     password: str

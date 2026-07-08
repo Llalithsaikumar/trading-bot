@@ -12,7 +12,7 @@ Usage:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from langgraph.graph import END, StateGraph
 
@@ -59,6 +59,7 @@ class DefaultConfigCompiledGraph:
 
     async def ainvoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
         import uuid
+
         if config is None:
             config = {}
         if "configurable" not in config:
@@ -69,6 +70,7 @@ class DefaultConfigCompiledGraph:
 
     async def astream(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
         import uuid
+
         if config is None:
             config = {}
         if "configurable" not in config:
@@ -79,6 +81,7 @@ class DefaultConfigCompiledGraph:
 
     def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
         import uuid
+
         if config is None:
             config = {}
         if "configurable" not in config:
@@ -89,6 +92,7 @@ class DefaultConfigCompiledGraph:
 
     def stream(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
         import uuid
+
         if config is None:
             config = {}
         if "configurable" not in config:
@@ -147,7 +151,6 @@ class TradingGraphBuilder:
         graph.add_node("execution", execution_agent.run, retry_policy=retry_policy)
         graph.add_node("reflection", reflection_agent.run, retry_policy=retry_policy)
 
-
         # ── Linear edges: memory → … → risk ──────────────────────────────────
         graph.set_entry_point("memory")
         graph.add_edge("memory", "market")
@@ -196,4 +199,3 @@ def build_trading_graph(
         A compiled LangGraph StateGraph ready for ainvoke().
     """
     return TradingGraphBuilder(deps or AgentDependencies()).build()
-

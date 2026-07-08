@@ -45,10 +45,12 @@ class PolymarketService:
                         liquidity=Decimal(str(item["liquidity"])),
                         volume=Decimal(str(item["volume"])),
                         volume_24h=Decimal(str(item["volume_24h"])),
-                        end_date=datetime.fromisoformat(item["end_date"]) if item.get("end_date") else None,
+                        end_date=datetime.fromisoformat(item["end_date"])
+                        if item.get("end_date")
+                        else None,
                         category=item.get("category"),
                         active=bool(item["active"]),
-                        fetched_at=datetime.fromisoformat(item["fetched_at"])
+                        fetched_at=datetime.fromisoformat(item["fetched_at"]),
                     )
                     for item in data
                 ]
@@ -70,9 +72,10 @@ class PolymarketService:
 
         # Filter and extract
         import re
+
         keywords_pattern = re.compile(
             r"\b(bitcoin|btc|ethereum|eth|crypto|cryptocurrency|solana|sol|xrp|cardano|ada|defi|nft|web3|blockchain)\b",
-            re.IGNORECASE
+            re.IGNORECASE,
         )
 
         fetched_at = datetime.now(UTC)
@@ -84,11 +87,11 @@ class PolymarketService:
             question = m.get("question") or m.get("title") or ""
             description = m.get("description") or ""
             category = m.get("category") or ""
-            
+
             is_crypto = (
-                bool(keywords_pattern.search(question)) or
-                bool(keywords_pattern.search(description)) or
-                bool(keywords_pattern.search(category))
+                bool(keywords_pattern.search(question))
+                or bool(keywords_pattern.search(description))
+                or bool(keywords_pattern.search(category))
             )
             if not is_crypto:
                 continue
@@ -123,6 +126,7 @@ class PolymarketService:
             if end_date_raw:
                 try:
                     import arrow
+
                     end_date = arrow.get(end_date_raw).datetime
                 except Exception:
                     pass
@@ -144,12 +148,12 @@ class PolymarketService:
                 end_date=end_date,
                 category=str(category) if category else "Crypto",
                 active=bool(active),
-                fetched_at=fetched_at
+                fetched_at=fetched_at,
             )
             self._session.add(snapshot)
-            
+
             prob = float(yes_price)
-            
+
             response_item = PolymarketMarketResponse(
                 condition_id=str(condition_id),
                 question=str(question),
@@ -163,7 +167,7 @@ class PolymarketService:
                 end_date=end_date,
                 category=str(category) if category else "Crypto",
                 active=bool(active),
-                fetched_at=fetched_at
+                fetched_at=fetched_at,
             )
             filtered_markets.append(response_item)
 
@@ -185,7 +189,7 @@ class PolymarketService:
                     "end_date": item.end_date.isoformat() if item.end_date else None,
                     "category": item.category,
                     "active": item.active,
-                    "fetched_at": item.fetched_at.isoformat()
+                    "fetched_at": item.fetched_at.isoformat(),
                 }
                 for item in filtered_markets
             ]
@@ -198,7 +202,9 @@ class PolymarketService:
         db_snapshots = await self._repository.get_latest_snapshots(limit=limit)
         return [self._map_model_to_response(db_snap) for db_snap in db_snapshots]
 
-    async def get_market_by_condition_id(self, condition_id: str, limit: int = 20) -> list[PolymarketMarketResponse]:
+    async def get_market_by_condition_id(
+        self, condition_id: str, limit: int = 20
+    ) -> list[PolymarketMarketResponse]:
         """Fetch historical snapshots of a specific market."""
         db_snapshots = await self._repository.get_by_condition_id(condition_id, limit=limit)
         return [self._map_model_to_response(db_snap) for db_snap in db_snapshots]
@@ -208,10 +214,7 @@ class PolymarketService:
         markets = await self.get_latest_insights()
         if not markets:
             return PolymarketSummaryResponse(
-                total_markets=0,
-                avg_probability=0.5,
-                total_liquidity=Decimal("0"),
-                markets=[]
+                total_markets=0, avg_probability=0.5, total_liquidity=Decimal("0"), markets=[]
             )
 
         total_markets = len(markets)
@@ -222,7 +225,7 @@ class PolymarketService:
             total_markets=total_markets,
             avg_probability=avg_probability,
             total_liquidity=total_liquidity,
-            markets=markets
+            markets=markets,
         )
 
     def _map_model_to_response(self, model: PolymarketSnapshot) -> PolymarketMarketResponse:
@@ -239,5 +242,5 @@ class PolymarketService:
             end_date=model.end_date,
             category=model.category,
             active=model.active,
-            fetched_at=model.fetched_at
+            fetched_at=model.fetched_at,
         )

@@ -9,6 +9,7 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir app
     volumes:
       - ./backend:/app
+      - /app/.venv
     environment:
       APP_ENV: development
       APP_DEBUG: "true"
@@ -19,12 +20,14 @@ services:
     command: celery -A app.workers.celery_app worker --loglevel=debug --concurrency=2 -Q default,trading,market_data
     volumes:
       - ./backend:/app
+      - /app/.venv
 
   beat:
     build:
       target: development
     volumes:
       - ./backend:/app
+      - /app/.venv
 
   frontend:
     build:

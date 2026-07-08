@@ -76,7 +76,9 @@ class TechnicalIndicator(UUIDMixin, Base):
 
     __tablename__ = "technical_indicators"
     __table_args__ = (
-        UniqueConstraint("exchange", "symbol", "timeframe", "timestamp", name="uq_technical_indicators"),
+        UniqueConstraint(
+            "exchange", "symbol", "timeframe", "timestamp", name="uq_technical_indicators"
+        ),
     )
 
     exchange: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -96,5 +98,3 @@ class TechnicalIndicator(UUIDMixin, Base):
     bb_lower: Mapped[Decimal | None] = mapped_column(Numeric(20, 8))
     vwap: Mapped[Decimal | None] = mapped_column(Numeric(20, 8))
     adx: Mapped[Decimal | None] = mapped_column(Numeric(20, 8))
-
-
