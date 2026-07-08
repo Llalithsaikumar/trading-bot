@@ -4,6 +4,7 @@ Technical Agent node — computes technical indicators from OHLCV data using pan
 
 from __future__ import annotations
 
+from contextlib import suppress
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
@@ -51,6 +52,7 @@ class TechnicalAgent(BaseAgent):
                     ts = latest_candle["timestamp"]
                     if isinstance(ts, str):
                         import arrow
+
                         ts_dt = arrow.get(ts).datetime
                     elif isinstance(ts, (int, float)):
                         ts_dt = datetime.fromtimestamp(ts / 1000, tz=UTC)
@@ -88,9 +90,7 @@ class TechnicalAgent(BaseAgent):
                     db_ind.bb_upper = Decimal(str(analysis.bb_upper))
                     db_ind.bb_middle = Decimal(str(analysis.bb_middle))
                     db_ind.bb_lower = Decimal(str(analysis.bb_lower))
-                    db_ind.vwap = (
-                        Decimal(str(analysis.vwap)) if analysis.vwap is not None else None
-                    )
+                    db_ind.vwap = Decimal(str(analysis.vwap)) if analysis.vwap is not None else None
                     db_ind.adx = Decimal(str(analysis.adx)) if analysis.adx is not None else None
 
                     await self._deps.session.flush()
@@ -125,11 +125,9 @@ class TechnicalAgent(BaseAgent):
         df.ta.macd(fast=12, slow=26, signal=9, append=True)
         df.ta.atr(length=14, append=True)
         df.ta.bbands(length=20, std=2.0, append=True)
-        try:
-            df.ta.vwap(append=True)
-        except Exception:
+        with suppress(Exception):
             # VWAP fallback if calculation errors on mock data
-            pass
+            df.ta.vwap(append=True)
         df.ta.adx(length=14, append=True)
 
         def get_col_val(prefix: str, default: float = 0.0) -> Decimal:

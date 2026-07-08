@@ -36,7 +36,9 @@ async def test_market_agent_run_and_persist(db_session, mocker):
     mock_ws = mocker.patch(
         "app.agents.nodes.market_node.ws_manager.broadcast_channel", new_callable=AsyncMock
     )
-    mocker.patch("app.services.market_data.market_data_service.get_exchange", return_value=mock_exchange)
+    mocker.patch(
+        "app.services.market_data.market_data_service.get_exchange", return_value=mock_exchange
+    )
 
     # 2. Setup AgentDependencies and MarketAgent
     deps = AgentDependencies(session=db_session, exchange=mock_exchange)

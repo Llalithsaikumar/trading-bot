@@ -23,12 +23,22 @@ if TYPE_CHECKING:
 class TradingDecision(BaseModel):
     """Structured output schema for LLM decisions."""
 
-    signal: str = Field(description="Actionable trading signal: MUST be one of 'BUY', 'SELL', or 'WAIT'")
+    signal: str = Field(
+        description="Actionable trading signal: MUST be one of 'BUY', 'SELL', or 'WAIT'"
+    )
     confidence: float = Field(description="Confidence score for the signal, between 0.0 and 1.0")
-    reasoning: str = Field(description="Step-by-step technical analysis reasoning explaining the decision")
-    suggested_entry: str | None = Field(default=None, description="Suggested entry price if BUY/SELL")
-    suggested_stop_loss: str | None = Field(default=None, description="Suggested stop loss price if BUY/SELL")
-    suggested_take_profit: str | None = Field(default=None, description="Suggested take profit price if BUY/SELL")
+    reasoning: str = Field(
+        description="Step-by-step technical analysis reasoning explaining the decision"
+    )
+    suggested_entry: str | None = Field(
+        default=None, description="Suggested entry price if BUY/SELL"
+    )
+    suggested_stop_loss: str | None = Field(
+        default=None, description="Suggested stop loss price if BUY/SELL"
+    )
+    suggested_take_profit: str | None = Field(
+        default=None, description="Suggested take profit price if BUY/SELL"
+    )
 
 
 class DecisionAgent(BaseAgent):
@@ -93,11 +103,11 @@ class DecisionAgent(BaseAgent):
 
         # Build Risk context input string
         risk_context_str = (
-            f"- Drawdown Limit: 10%\n"
-            f"- Account Risk Limit: 1% per trade\n"
-            f"- Leverage Limit: 2x\n"
-            f"- Max Open Positions: 5\n"
-            f"- Daily Loss Limit: 5.0%"
+            "- Drawdown Limit: 10%\n"
+            "- Account Risk Limit: 1% per trade\n"
+            "- Leverage Limit: 2x\n"
+            "- Max Open Positions: 5\n"
+            "- Daily Loss Limit: 5.0%"
         )
 
         return DECISION_USER_TEMPLATE.format(

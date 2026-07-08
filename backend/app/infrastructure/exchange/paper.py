@@ -1,8 +1,10 @@
 """Paper trading exchange adapter mapping CCXT BaseExchange methods to the PaperTradingEngine."""
+
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from decimal import Decimal
-from typing import Any, AsyncIterator
+from typing import Any
 import uuid
 from sqlalchemy import select
 
@@ -88,9 +90,7 @@ class PaperExchange(BaseExchange):
         limit: int = 100,
         since: int | None = None,
     ) -> list[list[Any]]:
-        return await self._public_exchange.fetch_ohlcv(
-            symbol, timeframe, limit=limit, since=since
-        )
+        return await self._public_exchange.fetch_ohlcv(symbol, timeframe, limit=limit, since=since)
 
     async def create_market_order(
         self,
@@ -245,4 +245,3 @@ class PaperExchange(BaseExchange):
             },
             "info": {},
         }
-

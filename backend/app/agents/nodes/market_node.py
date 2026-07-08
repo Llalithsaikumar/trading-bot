@@ -6,9 +6,10 @@ Uses Binance WebSocket when possible, with automated fallback to REST polling.
 from __future__ import annotations
 
 import asyncio
+from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from typing import TYPE_CHECKING, Any
 
 import ccxt
 from loguru import logger
@@ -127,11 +128,11 @@ class MarketAgent(BaseAgent):
             for symbol in symbols:
                 tasks.append(asyncio.create_task(self._watch_ticker_stream(exc, symbol)))
                 tasks.append(asyncio.create_task(self._watch_orderbook_stream(exc, symbol)))
-                tasks.append(
-                    asyncio.create_task(self._watch_ohlcv_stream(exc, symbol, timeframe))
-                )
+                tasks.append(asyncio.create_task(self._watch_ohlcv_stream(exc, symbol, timeframe)))
 
-            logger.info("Started CCXT Pro WebSocket streams", exchange=exc.exchange_id, symbols=symbols)
+            logger.info(
+                "Started CCXT Pro WebSocket streams", exchange=exc.exchange_id, symbols=symbols
+            )
             await asyncio.gather(*tasks)
         except (AttributeError, NotImplementedError, ccxt.NotSupported) as exc_ws:
             logger.warning(
@@ -150,7 +151,9 @@ class MarketAgent(BaseAgent):
                 "bid": float(raw_ticker.get("bid") or 0.0),
                 "ask": float(raw_ticker.get("ask") or 0.0),
                 "last": float(raw_ticker.get("last") or raw_ticker.get("close") or 0.0),
-                "volume_24h": float(raw_ticker.get("baseVolume") or raw_ticker.get("volume") or 0.0),
+                "volume_24h": float(
+                    raw_ticker.get("baseVolume") or raw_ticker.get("volume") or 0.0
+                ),
                 "change_24h_pct": float(raw_ticker.get("percentage") or 0.0),
             }
             # Persist to DB if session exists
@@ -180,7 +183,7 @@ class MarketAgent(BaseAgent):
             await self._broadcast_orderbook(exc.exchange_id, symbol, ob_data)
 
     async def _watch_ohlcv_stream(self, exc: Any, symbol: str, timeframe: str) -> None:
-        async for raw_candles in exc.watch_ohlcv(symbol, timeframe):
+        async for _raw_candles in exc.watch_ohlcv(symbol, timeframe):
             # Persist
             if self._deps.session and self._market_service:
                 await self._market_service.get_ohlcv(exc.exchange_id, symbol, timeframe, limit=100)
@@ -204,7 +207,9 @@ class MarketAgent(BaseAgent):
                 try:
                     # Sync ticker & OHLCV via service (performs postgres updates)
                     if self._market_service:
-                        ticker_resp = await self._market_service.sync_ticker(exc.exchange_id, symbol)
+                        ticker_resp = await self._market_service.sync_ticker(
+                            exc.exchange_id, symbol
+                        )
                         ticker_data = {
                             "bid": float(ticker_resp.bid),
                             "ask": float(ticker_resp.ask),

@@ -75,7 +75,6 @@ class PortfolioMetrics(BaseModel):
     sharpe_ratio: float | None = None
 
 
-
 class RiskViolation(BaseModel):
     """A single violated risk rule."""
 
@@ -151,7 +150,6 @@ class TradingState(BaseModel):
     suggested_stop_loss: Decimal | None = None
     suggested_take_profit: Decimal | None = None
     suggested_size: Decimal | None = None
-
 
     # ── Risk Agent output ─────────────────────────────────────────────────────
     risk_approved: bool = False

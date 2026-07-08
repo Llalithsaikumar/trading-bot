@@ -66,4 +66,3 @@ class Analysis(BaseSchema):
     bb_lower: Decimal
     vwap: Decimal | None = None
     adx: Decimal | None = None
-

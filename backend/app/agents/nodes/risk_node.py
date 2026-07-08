@@ -68,6 +68,7 @@ class RiskAgent(BaseAgent):
 
     async def evaluate(self, state: TradingState) -> list[RiskViolation]:
         import inspect
+
         violations: list[RiskViolation] = []
         for rule_fn in RISK_RULES:
             try:
@@ -83,7 +84,11 @@ class RiskAgent(BaseAgent):
                             message=note or f"Rule '{rule_fn.__name__}' failed",
                             severity="critical"
                             if rule_fn.__name__
-                            in ("check_neutral_signal", "check_max_drawdown", "check_consecutive_losses")
+                            in (
+                                "check_neutral_signal",
+                                "check_max_drawdown",
+                                "check_consecutive_losses",
+                            )
                             else "error",
                         )
                     )

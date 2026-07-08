@@ -16,11 +16,11 @@ __all__ = [
     "MarketTicker",
     "Order",
     "OrderBookSnapshot",
-    "TechnicalIndicator",
     "Portfolio",
     "Position",
     "Strategy",
     "StrategyExecution",
+    "TechnicalIndicator",
     "TimestampMixin",
     "User",
 ]

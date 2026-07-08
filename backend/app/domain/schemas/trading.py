@@ -13,7 +13,6 @@ import uuid
 from decimal import Decimal
 
 
-
 # ─── Order ─────────────────────────────────────────────────────────────────────
 class OrderCreate(BaseSchema):
     portfolio_id: uuid.UUID
