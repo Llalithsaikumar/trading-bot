@@ -18,7 +18,6 @@ __all__ = [
     "MarketTicker",
     "Order",
     "OrderBookSnapshot",
-    "PolymarketSnapshot",
     "Portfolio",
     "Position",
     "Strategy",

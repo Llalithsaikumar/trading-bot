@@ -130,6 +130,7 @@ class TechnicalAgent(BaseAgent):
         df.ta.atr(length=14, append=True)
         df.ta.bbands(length=20, std=2.0, append=True)
         with suppress(Exception):
+
             df.ta.vwap(append=True)
         df.ta.adx(length=14, append=True)
 

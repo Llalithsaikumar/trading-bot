@@ -11,7 +11,6 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
-
 import ccxt
 from loguru import logger
 from sqlalchemy import select
