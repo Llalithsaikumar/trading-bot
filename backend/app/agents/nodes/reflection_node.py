@@ -31,6 +31,10 @@ class ReflectionAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.reflection and state.reflection.summary:
+            self._log_info("reflection already run, skipping for idempotency")
+            return {"reflection": state.reflection}
+
         self._log_info(
             "reflecting on cycle",
             signal=str(state.signal),

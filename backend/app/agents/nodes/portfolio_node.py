@@ -30,8 +30,17 @@ class PortfolioAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.portfolio_id and state.portfolio_metrics.total_value_usdt > 0:
+            self._log_info("portfolio metrics already loaded, skipping for idempotency")
+            return {
+                "available_balance": state.available_balance,
+                "open_positions": state.open_positions,
+                "portfolio_metrics": state.portfolio_metrics,
+            }
+
         portfolio_id = state.portfolio_id
         self._log_info("loading portfolio", portfolio_id=portfolio_id)
+
         try:
             if portfolio_id is None:
                 self._log_warning("no portfolio_id in state; using defaults")

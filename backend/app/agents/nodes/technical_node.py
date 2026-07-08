@@ -32,6 +32,10 @@ class TechnicalAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.indicators:
+            self._log_info("indicators already computed, skipping for idempotency")
+            return {"indicators": state.indicators}
+
         self._log_info("computing indicators", symbols=list(state.ohlcv.keys()))
         try:
             indicators: dict[str, dict[str, Any]] = {}
@@ -126,7 +130,7 @@ class TechnicalAgent(BaseAgent):
         df.ta.atr(length=14, append=True)
         df.ta.bbands(length=20, std=2.0, append=True)
         with suppress(Exception):
-            # VWAP fallback if calculation errors on mock data
+
             df.ta.vwap(append=True)
         df.ta.adx(length=14, append=True)
 

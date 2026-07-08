@@ -95,6 +95,29 @@ class ReflectionResult(BaseModel):
     recommended_adjustments: list[str] = Field(default_factory=list)
 
 
+class PredictionInsight(BaseModel):
+    """A single Polymarket prediction market insight."""
+
+    market_id: str
+    question: str
+    probability: float  # 0.0-1.0
+    liquidity: Decimal
+    volume: Decimal
+    end_date: datetime | None = None
+
+
+class PredictionMarketSentiment(BaseModel):
+    """Aggregated prediction market signal."""
+
+    bullish_count: int = 0
+    bearish_count: int = 0
+    avg_probability: float = 0.0
+    total_liquidity: Decimal = Decimal("0")
+    signal_strength: float = 0.0  # -1.0 to 1.0
+    insights: list[PredictionInsight] = Field(default_factory=list)
+    fetched_at: datetime | None = None
+
+
 # ---------------------------------------------------------------------------
 # Primary graph state
 # ---------------------------------------------------------------------------
@@ -163,6 +186,12 @@ class TradingState(BaseModel):
 
     # ── Reflection Agent output ───────────────────────────────────────────────
     reflection: ReflectionResult = Field(default_factory=ReflectionResult)
+
+    # ── Insight Agent output (Polymarket) ─────────────────────────────────────
+    prediction_insights: list[PredictionInsight] = Field(default_factory=list)
+    prediction_sentiment: PredictionMarketSentiment = Field(
+        default_factory=PredictionMarketSentiment
+    )
 
     # ── Diagnostics ───────────────────────────────────────────────────────────
     # Keyed by node name; set by nodes on failure

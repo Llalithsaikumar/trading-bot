@@ -26,6 +26,10 @@ class NewsAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.news_items or (state.sentiment and state.sentiment.overall_score != 0.0):
+            self._log_info("news data already fetched, skipping for idempotency")
+            return {"news_items": state.news_items, "sentiment": state.sentiment}
+
         self._log_info("fetching news", symbols=state.symbols)
         try:
             news_items = await self.fetch_news(state.symbols, limit=20)

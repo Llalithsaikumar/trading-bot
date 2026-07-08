@@ -19,7 +19,10 @@ from app.infrastructure.database.session import AsyncSessionFactory
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
 
+    from app.infrastructure.exchange.base import BaseExchange
     from sqlalchemy.ext.asyncio import AsyncSession
+
+    from app.infrastructure.exchange.base import BaseExchange
 
 security_scheme = HTTPBearer(auto_error=False)
 
@@ -148,3 +151,13 @@ class PaginationParams:
 
 
 Pagination = Annotated[PaginationParams, Depends(PaginationParams)]
+
+
+# ---------------------------------------------------------------------------
+# Exchange client
+# ---------------------------------------------------------------------------
+def get_exchange_client(exchange: str = "binance") -> BaseExchange:
+    """FastAPI dependency to retrieve an exchange client adapter by its name."""
+    from app.infrastructure.exchange.factory import get_exchange
+
+    return get_exchange(exchange)

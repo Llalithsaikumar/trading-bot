@@ -54,8 +54,21 @@ class DecisionAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.signal is not None and state.signal != TradingSignal.NEUTRAL:
+            self._log_info("signal already computed, skipping for idempotency")
+            return {
+                "signal": state.signal,
+                "confidence": state.confidence,
+                "reasoning": state.reasoning,
+                "analysis": state.analysis,
+                "suggested_entry": state.suggested_entry,
+                "suggested_stop_loss": state.suggested_stop_loss,
+                "suggested_take_profit": state.suggested_take_profit,
+            }
+
         primary_symbol = state.symbols[0] if state.symbols else "UNKNOWN"
         self._log_info("running LLM decision", symbol=primary_symbol)
+
         try:
             signal, confidence, reasoning, entry, sl, tp = await self._run_decision(state)
             self._log_info(
@@ -100,6 +113,7 @@ class DecisionAgent(BaseAgent):
         headlines = self._format_headlines(state.news_items[:5])
         positions_str = self._format_positions(state.open_positions)
         memory_str = self._format_memory(state.memory_context)
+        prediction_insights_str = self._format_prediction_insights(state.prediction_sentiment)
 
         # Build Risk context input string
         risk_context_str = (
@@ -126,6 +140,7 @@ class DecisionAgent(BaseAgent):
             sentiment_score=round(state.sentiment.overall_score, 3) if state.sentiment else 0.0,
             sentiment_label=state.sentiment.label if state.sentiment else "neutral",
             headlines=headlines,
+            prediction_insights=prediction_insights_str,
             available_balance=state.available_balance,
             open_positions_count=len(state.open_positions),
             open_positions=positions_str,
@@ -278,4 +293,20 @@ class DecisionAgent(BaseAgent):
 
         if not lines:
             return "No historical context available"
+        return "\n".join(lines)
+
+    @staticmethod
+    def _format_prediction_insights(sentiment: Any) -> str:
+        if not sentiment or not sentiment.insights:
+            return "No prediction market data available"
+        lines = [
+            f"- Signal Strength: {sentiment.signal_strength:.2f} (from {sentiment.bullish_count} bullish vs {sentiment.bearish_count} bearish markets)",
+            f"- Avg Probability: {sentiment.avg_probability:.1%}",
+            f"- Total Liquidity: ${sentiment.total_liquidity:,.2f}",
+            "Key Prediction Markets:",
+        ]
+        for insight in sentiment.insights[:5]:
+            lines.append(
+                f"  • {insight.question} → YES probability: {insight.probability:.1%} (liq: ${insight.liquidity:,.0f}, vol: ${insight.volume:,.0f})"
+            )
         return "\n".join(lines)

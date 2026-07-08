@@ -30,6 +30,14 @@ class RiskAgent(BaseAgent):
         super().__init__(deps)
 
     async def run(self, state: TradingState) -> dict[str, Any]:
+        if state.risk_approved or state.risk_violations:
+            self._log_info("risk evaluation already completed, skipping for idempotency")
+            return {
+                "risk_approved": state.risk_approved,
+                "risk_violations": state.risk_violations,
+                "risk_score": state.risk_score,
+            }
+
         self._log_info("evaluating risk rules", signal=str(state.signal))
         try:
             violations = await self.evaluate(state)

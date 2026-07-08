@@ -1,5 +1,5 @@
 """
-TradingGraphBuilder — assembles the 9-node LangGraph workflow with DI.
+TradingGraphBuilder — assembles the 10-node LangGraph workflow with DI.
 
 Usage:
     from app.agents.interfaces.base import AgentDependencies
@@ -12,7 +12,7 @@ Usage:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from langgraph.graph import END, StateGraph
 
@@ -20,6 +20,7 @@ from app.agents.graph.state import TradingState
 from app.agents.interfaces.base import AgentDependencies
 from app.agents.nodes.decision_node import DecisionAgent
 from app.agents.nodes.execution_node import ExecutionAgent
+from app.agents.nodes.insight_node import InsightAgent
 from app.agents.nodes.market_node import MarketAgent
 from app.agents.nodes.memory_node import MemoryAgent
 from app.agents.nodes.news_node import NewsAgent
@@ -47,12 +48,66 @@ def _should_execute(state: TradingState) -> str:
 # ---------------------------------------------------------------------------
 
 
+class DefaultConfigCompiledGraph:
+    """Wraps CompiledStateGraph to automatically inject a thread_id if a checkpointer is used."""
+
+    def __init__(self, compiled_graph: Any) -> None:
+        self._graph = compiled_graph
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._graph, name)
+
+    async def ainvoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        import uuid
+
+        if config is None:
+            config = {}
+        if "configurable" not in config:
+            config["configurable"] = {}
+        if "thread_id" not in config["configurable"]:
+            config["configurable"]["thread_id"] = str(uuid.uuid4())
+        return await self._graph.ainvoke(input, config, **kwargs)
+
+    async def astream(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        import uuid
+
+        if config is None:
+            config = {}
+        if "configurable" not in config:
+            config["configurable"] = {}
+        if "thread_id" not in config["configurable"]:
+            config["configurable"]["thread_id"] = str(uuid.uuid4())
+        return self._graph.astream(input, config, **kwargs)
+
+    def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        import uuid
+
+        if config is None:
+            config = {}
+        if "configurable" not in config:
+            config["configurable"] = {}
+        if "thread_id" not in config["configurable"]:
+            config["configurable"]["thread_id"] = str(uuid.uuid4())
+        return self._graph.invoke(input, config, **kwargs)
+
+    def stream(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        import uuid
+
+        if config is None:
+            config = {}
+        if "configurable" not in config:
+            config["configurable"] = {}
+        if "thread_id" not in config["configurable"]:
+            config["configurable"]["thread_id"] = str(uuid.uuid4())
+        return self._graph.stream(input, config, **kwargs)
+
+
 class TradingGraphBuilder:
     """
-    Builds the compiled 9-node LangGraph workflow.
+    Builds the compiled 10-node LangGraph workflow.
 
     Node order:
-      memory → market → news → technical → portfolio → decision → risk
+      memory → market → news → technical → insight → portfolio → decision → risk
         → (conditional) execution → reflection → END
                       ↘ (risk rejected) reflection → END
 
@@ -64,11 +119,15 @@ class TradingGraphBuilder:
         self._deps = deps
 
     def build(self) -> CompiledStateGraph:
-        # ── Instantiate all 9 agents with injected dependencies ───────────────
+        from langgraph.types import RetryPolicy
+        from langgraph.checkpoint.memory import MemorySaver
+
+        # ── Instantiate all 10 agents with injected dependencies ──────────────
         memory_agent = MemoryAgent(self._deps)
         market_agent = MarketAgent(self._deps)
         news_agent = NewsAgent(self._deps)
         technical_agent = TechnicalAgent(self._deps)
+        insight_agent = InsightAgent(self._deps)
         portfolio_agent = PortfolioAgent(self._deps)
         decision_agent = DecisionAgent(self._deps)
         risk_agent = RiskAgent(self._deps)
@@ -78,23 +137,27 @@ class TradingGraphBuilder:
         # ── Build state graph ─────────────────────────────────────────────────
         graph = StateGraph(TradingState)
 
-        # Register nodes (bound methods are callable — LangGraph accepts them)
-        graph.add_node("memory", memory_agent.run)
-        graph.add_node("market", market_agent.run)
-        graph.add_node("news", news_agent.run)
-        graph.add_node("technical", technical_agent.run)
-        graph.add_node("portfolio", portfolio_agent.run)
-        graph.add_node("decision", decision_agent.run)
-        graph.add_node("risk", risk_agent.run)
-        graph.add_node("execution", execution_agent.run)
-        graph.add_node("reflection", reflection_agent.run)
+        # Register nodes with retry policies
+        retry_policy = RetryPolicy(max_attempts=3)
+
+        graph.add_node("memory", memory_agent.run, retry_policy=retry_policy)
+        graph.add_node("market", market_agent.run, retry_policy=retry_policy)
+        graph.add_node("news", news_agent.run, retry_policy=retry_policy)
+        graph.add_node("technical", technical_agent.run, retry_policy=retry_policy)
+        graph.add_node("insight", insight_agent.run, retry_policy=retry_policy)
+        graph.add_node("portfolio", portfolio_agent.run, retry_policy=retry_policy)
+        graph.add_node("decision", decision_agent.run, retry_policy=retry_policy)
+        graph.add_node("risk", risk_agent.run, retry_policy=retry_policy)
+        graph.add_node("execution", execution_agent.run, retry_policy=retry_policy)
+        graph.add_node("reflection", reflection_agent.run, retry_policy=retry_policy)
 
         # ── Linear edges: memory → … → risk ──────────────────────────────────
         graph.set_entry_point("memory")
         graph.add_edge("memory", "market")
         graph.add_edge("market", "news")
         graph.add_edge("news", "technical")
-        graph.add_edge("technical", "portfolio")
+        graph.add_edge("technical", "insight")
+        graph.add_edge("insight", "portfolio")
         graph.add_edge("portfolio", "decision")
         graph.add_edge("decision", "risk")
 
@@ -112,7 +175,9 @@ class TradingGraphBuilder:
         graph.add_edge("execution", "reflection")
         graph.add_edge("reflection", END)
 
-        return graph.compile()
+        # Compile graph with memory saver checkpointer
+        compiled = graph.compile(checkpointer=MemorySaver())
+        return DefaultConfigCompiledGraph(compiled)
 
 
 # ---------------------------------------------------------------------------

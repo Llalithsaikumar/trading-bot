@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.cargo/bin:$PATH"
+ENV PATH="/app/.venv/bin:/root/.local/bin:/root/.cargo/bin:$PATH"
 
 # ─── Dependencies Stage ────────────────────────────────────────────────────────
 FROM base AS deps
@@ -45,7 +45,7 @@ USER trader
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://127.0.0.1:8000/health || exit 1
 
 EXPOSE 8000
 

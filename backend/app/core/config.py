@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     APP_ENV: Literal["development", "staging", "production"] = "development"
     APP_DEBUG: bool = False
     APP_SECRET_KEY: str
-    APP_ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1"]
+    APP_ALLOWED_HOSTS: str | list[str] = ["localhost", "127.0.0.1"]
 
     # ── API ────────────────────────────────────────────────────────────────────
     API_V1_PREFIX: str = "/api/v1"
@@ -89,7 +89,7 @@ class Settings(BaseSettings):
     LOG_FILE_PATH: str = "logs/app.log"
 
     # ── CORS ───────────────────────────────────────────────────────────────────
-    CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
+    CORS_ORIGINS: str | list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
     # ── WebSocket ──────────────────────────────────────────────────────────────
     WS_HEARTBEAT_INTERVAL: int = 30
@@ -102,6 +102,11 @@ class Settings(BaseSettings):
 
     # ── Monitoring ─────────────────────────────────────────────────────────────
     PROMETHEUS_ENABLED: bool = True
+
+    # ── Polymarket ─────────────────────────────────────────────────────────────
+    POLYMARKET_API_URL: str = "https://gamma-api.polymarket.com"
+    POLYMARKET_ENABLED: bool = True
+    POLYMARKET_CACHE_TTL: int = 300
 
     @property
     def is_production(self) -> bool:

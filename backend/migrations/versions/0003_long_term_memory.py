@@ -58,8 +58,6 @@ def upgrade() -> None:
         ),
     )
 
-    op.create_index("ix_long_term_memories_strategy_id", "long_term_memories", ["strategy_id"])
-
 
 def downgrade() -> None:
     op.drop_table("long_term_memories")
